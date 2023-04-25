@@ -1,0 +1,20 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# IDEs and editors
+.idea/
+*.swp
+*~.nfs*
+*.bak
+*.cache
+*.dat
+*.log
+*.patch
+*.orig.*
+*.rej.*
+*.tmp.*
+
+*.mp3
+
+env/
+config.ini
