@@ -7,26 +7,42 @@
 """
 from bilibili_api import live, sync
 
-import config
-from src.events import DanmuMsgEvent, SendGiftEvent, SuperChatMessageEvent, InteractWordEvent
+from src import config
+from src.events import BlDanmuMsgEvent, BlSendGiftEvent, BlSuperChatMessageEvent, BlInteractWordEvent
 from src.log import worker_logger
 
 from src.utils import user_queue
 
-room = live.LiveDanmaku(config.room_id)
 
 logger = worker_logger
 
 
-@room.on('DANMU_MSG')
+class BlLiveRoom:
+    def __init__(self, bl_room_id=config.room_id):
+        self.room = live.LiveDanmaku(bl_room_id)
+        self.add_event_listeners()
+
+    def add_event_listeners(self):
+        listener_map = {
+            'DANMU_MSG': on_danmaku_event_filter,
+            'SUPER_CHAT_MESSAGE': on_super_chat_message_event_filter,
+            'SEND_GIFT': on_gift_event_filter,
+            'INTERACT_WORD': on_interact_word_event_filter,
+        }
+        for item in listener_map.items():
+            self.room.add_event_listener(*item)
+
+    def connect(self):
+        return self.room.connect()
+
+
 async def on_danmaku_event_filter(event_dict):
     # # 收到弹幕
-    # event = DanmuMsgEvent.filter(event_dict)
-    event = DanmuMsgEvent(event_dict)
+    # event = BlDanmuMsgEvent.filter(event_dict)
+    event = BlDanmuMsgEvent(event_dict)
     user_queue.send(event)
 
 
-@room.on('SUPER_CHAT_MESSAGE')
 async def on_super_chat_message_event_filter(event_dict):
     # SUPER_CHAT_MESSAGE
     # info = event['data']['data']
@@ -39,11 +55,10 @@ async def on_super_chat_message_event_filter(event_dict):
     #       info['price'],
     #       info['start_time'],
     #       )
-    event = SuperChatMessageEvent(event_dict)
+    event = BlSuperChatMessageEvent(event_dict)
     user_queue.send(event)
 
 
-@room.on('SEND_GIFT')
 async def on_gift_event_filter(event_dict):
     # 收到礼物
     # info = event_dict['data']['data']
@@ -54,11 +69,10 @@ async def on_gift_event_filter(event_dict):
     #       info['giftName'],
     #       info['timestamp'],
     #       )
-    event = SendGiftEvent(event_dict)
+    event = BlSendGiftEvent(event_dict)
     user_queue.send(event)
 
 
-@room.on('INTERACT_WORD')
 async def on_interact_word_event_filter(event_dict):
     # INTERACT_WORD
     # info = event_dict['data']['data']
@@ -70,7 +84,7 @@ async def on_interact_word_event_filter(event_dict):
     #       info['timestamp']
     #       )
     if not user_queue.event_queue.full():
-        event = InteractWordEvent(event_dict)
+        event = BlInteractWordEvent(event_dict)
         user_queue.send(event)
 
 # @room.on('WELCOME')
@@ -85,4 +99,5 @@ async def on_interact_word_event_filter(event_dict):
 #     print(4, event)
 
 if __name__ == '__main__':
-    sync(room.connect())
+    r = BlLiveRoom()
+    sync(r.connect())

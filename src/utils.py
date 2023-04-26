@@ -66,7 +66,7 @@ class UserQueue:
         if not event:
             logger.debug(f'过滤:{event}')
             return
-
+        # print(event._event_name)
         # Check if high-priority queue is full
         if event.is_high_priority:
             # Add object to high-priority queue
@@ -93,8 +93,12 @@ class UserQueue:
             event = None
         return event
 
+    def __str__(self):
+        return f"event_queue 数量:{self.event_queue.qsize()} high_priority_event_queue 数量:{self.high_priority_event_queue.qsize()}"
+
 
 user_queue = UserQueue()
+
 
 if __name__ == '__main__':
     a = GPT35Params(messages=[])

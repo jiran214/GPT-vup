@@ -23,7 +23,7 @@ from scipy import spatial
 import requests.adapters
 import urllib3
 
-import config
+from src import config
 from src.utils import GPT35Params
 from src.log import request_logger
 

@@ -6,8 +6,10 @@
  @SoftWare: PyCharm
 """
 import configparser
+import os.path
 
-file_path = './config.ini'
+file_path = os.path.join(os.path.abspath(os.getcwd()), 'config.ini')
+print(file_path)
 
 _config = configparser.RawConfigParser()
 _config.read(file_path)

@@ -12,7 +12,7 @@ import os
 
 import colorlog
 
-import config
+from src import config
 
 
 class Logging:

@@ -7,11 +7,11 @@
 """
 import time
 
-from actions import live2D_actions
-from base import Event
+from src.actions import live2D_actions
+from src.base import Event
 
 system_content = (
-    "请扮演一个傲娇的AI虚拟主播，你的名字叫桃桃。不要回答任何敏感问题！"
+    "请扮演一个傲娇的AI虚拟主播，你的名字叫兔兔。不要回答任何敏感问题！"
     "不要强调你是主播，不准道歉，只需要回答问题！"
     "你是一个带有一定的高傲情绪，可能会在自我表现时表现出一些自大或骄傲的情绪，或者表现出一些自信或者不屑一顾的态度。"
     "有时会有一些任性或者固执的表现。在做出决定时可能会表现出一定的倔强和固执，"
@@ -20,7 +20,7 @@ system_content = (
 )
 
 
-class DanmuMsgEvent(Event):
+class BlDanmuMsgEvent(Event):
 
     def get_kwargs(self):
         return {
@@ -40,7 +40,7 @@ class DanmuMsgEvent(Event):
         return f"{self._kwargs['content']} {gpt_resp}"
 
 
-class SuperChatMessageEvent(Event):
+class BlSuperChatMessageEvent(Event):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -68,7 +68,7 @@ class SuperChatMessageEvent(Event):
         return f"感谢{self._kwargs['user_name']}的sc。{self._kwargs['message']} {gpt_resp}"
 
 
-class SendGiftEvent(Event):
+class BlSendGiftEvent(Event):
 
     def get_kwargs(self):
         info = self._event_dict['data']['data']
@@ -97,7 +97,7 @@ class SendGiftEvent(Event):
         return f"{self._kwargs['content']}{gpt_resp}"
 
 
-class InteractWordEvent(Event):
+class BlInteractWordEvent(Event):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -129,6 +129,116 @@ class InteractWordEvent(Event):
 
     def get_audio_txt(self, gpt_resp):
         return f"{gpt_resp}"
+
+
+class DyDanmuMsgEvent(BlDanmuMsgEvent):
+
+    def get_kwargs(self):
+        return {
+            'content': self._event_dict['Data']['Content'],
+            'user_name': self._event_dict['Data']['User']['Nickname'],
+            'time': int(time.time())
+        }
+
+
+class DyCkEvent(Event):
+
+    def get_kwargs(self):
+        return {
+            'user_name': self._event_dict['Data']['User']['Nickname'],
+            'content': self._event_dict['Data']['Content'],
+            'time': int(time.time())
+        }
+
+    @property
+    def prompt_kwargs(self):
+        return {
+            'system_content': system_content,
+            'user_content': (
+                "{content}给你点了赞，"
+                "请表示感谢！"
+            ).format(content=self._kwargs['user_name'])
+        }
+
+    def get_audio_txt(self, gpt_resp):
+        return f"{gpt_resp}"
+
+
+class DyWelcomeWordEvent(Event):
+
+    def get_kwargs(self):
+        return {
+            'user_name': self._event_dict['Data']['User']['Nickname'],
+            'time': int(time.time())
+        }
+
+    @property
+    def prompt_kwargs(self):
+        return {
+            'system_content': system_content,
+            'user_content': (
+                "{user_name}，进入直播间"
+                "请表示欢迎！并简短聊聊他的名字"
+            ).format(user_name=self._kwargs['user_name'])
+        }
+
+    def get_audio_txt(self, gpt_resp):
+        return f"{gpt_resp}"
+
+
+class DySendGiftEvent(Event):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.is_high_priority = True
+
+    def get_kwargs(self):
+        return {
+            'user_name': self._event_dict['Data']['User']['Nickname'],
+            'giftName': self._event_dict['Data']['GiftName'],
+            'content': self._event_dict['Data']['Content'],
+            'time': int(time.time())
+        }
+
+    @property
+    def prompt_kwargs(self):
+        return {
+            'system_content': system_content,
+            'user_content': (
+                "{content}"
+                "请表示感谢，说一句赞美他的话！"
+            ).format(
+                content=self._kwargs['content']
+            )
+        }
+
+    def get_audio_txt(self, gpt_resp):
+        return f"{self._kwargs['user_name']} 送出{self._kwargs['giftName']}!{gpt_resp}"
+
+
+class DyAttentionEvent(Event):
+
+    def get_kwargs(self):
+        return {
+            'user_name': self._event_dict['data']['User']['Nickname'],
+            'content': self._event_dict['data']['Content'],
+            'time': int(time.time())
+        }
+
+    @property
+    def prompt_kwargs(self):
+        return {
+            'system_content': system_content,
+            'user_content': (
+                "{user_name}关注了你！"
+                "请表示感谢，说一句赞美他的话！"
+            ).format(
+                user_name=self._kwargs['user_name']
+            )
+        }
+
+    def get_audio_txt(self, gpt_resp):
+        return gpt_resp
 
 
 class UserEvent(Event):
