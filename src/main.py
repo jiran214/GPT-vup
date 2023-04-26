@@ -123,11 +123,20 @@ def start_thread(worker_name):
     thread.start()
 
 
-if __name__ == '__main__':
-    # 初始化live2d 动作和向量
-    # sync(initialize_action())
+class Master:
 
-    start_thread('dy_producer')
-    # # start_thread('bl_producer')
-    start_thread('user_producer')
-    start_thread('consumer')
+    def __init__(self, name):
+        self.name = name
+
+    def run(self):
+        if self.name == 'DouYin':
+            start_thread('dy_producer')
+        elif self.name == 'BiliBili':
+            start_thread('bl_producer')
+        start_thread('user_producer')
+        start_thread('consumer')
+
+
+if __name__ == '__main__':
+    # Master('DouYin').run()
+    Master('BiliBili').run()

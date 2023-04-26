@@ -12,6 +12,7 @@ GPT-vup
 
 - python 3. 8
 - windows
+- 确保有VPN 并开启全局代理
 
 ## :computer: 功能
 
@@ -94,7 +95,7 @@ proxy = 127.0.0.1:7890
 
 - 安装及使用教程网上有，只说明程序部分
 - 打开VTS，开启VTS的API开关
-- 运行`python ./actions`，pyvts会请求vts api（注意：此时VTS会有确认弹窗），控制台会打印当前模型的所有动作
+- 运行`python ./actions`，pyvts会请求vts api（注意：此时VTS会有确认弹窗），控制台会打印当前模型的所有动作 ps:会自动请求embedding，请忽略
 - 配置VTS动作：将所有动作黏贴到actions.py 的live2D_actions列表。每次运行main 程序时，会获取所有live2D_action_emotions的向量。
 
 ```python

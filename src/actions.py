@@ -69,7 +69,7 @@ async def initialize_action():
     await vts.close()
 
 
-# def test():
 if __name__ == "__main__":
+    action_embeddings = None  # 获取token不需要运行
     asyncio.run(initialize_action())
     # asyncio.run(play_action())
