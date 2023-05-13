@@ -8,7 +8,8 @@
 import configparser
 import os.path
 
-file_path = os.path.join(os.path.abspath(os.getcwd()), 'config.ini')
+
+file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config.ini')
 print(file_path)
 
 _config = configparser.RawConfigParser()
@@ -20,6 +21,7 @@ api_key = _config.get('openai', 'api_key')
 room_id = _config.getint('room', 'id')
 debug = _config.getboolean('other', 'debug')
 proxy = _config.get('other', 'proxy')
+
 
 if __name__ == '__main__':
     print(api_key, proxy)

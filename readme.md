@@ -134,6 +134,7 @@ action_embeddings = sync_get_embedding(live2D_action_emotions)
 ## :page_with_curl: 更新日志
 
 - 4.26 支持抖音直播
+- 5.13 LangChain重构prompt部分
 
 ## :phone: Contact Me
 
