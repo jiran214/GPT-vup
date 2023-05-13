@@ -22,13 +22,20 @@ room_id = _config.getint('room', 'id')
 debug = _config.getboolean('other', 'debug')
 proxy = _config.get('other', 'proxy')
 
+action_plugin = _config.getboolean('plugin', 'action')
+schedule_plugin = _config.getboolean('plugin', 'schedule')
+speech_plugin = _config.getboolean('plugin', 'speech')
+
 try:
-    with open("./action.json", 'r') as load_f:
-        live2D_action_dict = json.load(load_f)
-    live2D_actions = live2D_action_dict.keys()
-    live2D_embeddings = [live2D_action_dict[action] for action in live2D_actions]
+    live2D_actions = []
+    live2D_embeddings = []
+    if action_plugin:
+        with open("./action.json", 'r') as load_f:
+            live2D_action_dict = json.load(load_f)
+        live2D_actions = live2D_action_dict.keys()
+        live2D_embeddings = [live2D_action_dict[action] for action in live2D_actions]
 except Exception as e:
-    print('读取embedding文件错误，请检查是否初始化action', e)
+    print('读取embedding文件错误，请检查是否初始化action， 使用action plugin请先运行 python main action', e)
 
 if __name__ == '__main__':
     print(api_key, proxy)

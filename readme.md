@@ -4,7 +4,7 @@ GPT-vup
 
 ## :memo: 简介
 
-支持BiliBili和抖音直播，基于生产者-消费者设计，使用了openai嵌入、GPT3.5 api
+支持BiliBili和抖音直播，基于生产者-消费者模型设计，使用了openai嵌入、GPT3.5 api
 
 ![Snipaste_2023-04-25_21-26-54](https://raw.githubusercontent.com/jiran214/GPT-vup/master/public/Snipaste_2023-04-25_21-26-54.png)
 
@@ -19,8 +19,11 @@ GPT-vup
 1. 回答弹幕和SC
 2. 欢迎入场观众
 3. 感谢礼物
-4. 表情 动作响应
-5. 自定义任务
+4. 自定义任务
+5. plugin 在config.ini设置，默认都为False
+  - speech：监听ctrl+t热键，输入语音转为文本和ai数字人交互
+  - action：根据观众的行为匹配对应人物动作
+  - schedule：隔一段时间触发某一事件，讲故事、唱rap...
 
 ## :book: 原理
 
@@ -45,6 +48,7 @@ GPT-vup一共运行三个子线程：
 生产者线程三：
 
 - 如果vup只有回应弹幕，我觉得有些单调了，因此可以通过schedule模块，每隔一段时间往high_priority_event_queue送一些自定义Event，比如我想让她每隔十分钟做一个自我介绍、表演节目。
+- 5-13更新，支持热键触发实时语音交互，见plugin
 
 消费者线程：
 
@@ -61,6 +65,9 @@ GPT-vup一共运行三个子线程：
 ```
 git https://github.com/jiran214/GPT-vup.git
 cd src
+# 建议命令行或者pycharm创建虚拟环境并激活
+python -m pip install --upgrade pip pip
+# 可能会依赖冲突
 pip install -r .\requirements.txt
 ```
 
@@ -70,7 +77,7 @@ pip install -r .\requirements.txt
 
 ```ini
 [openai]
-api_key = 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
+api_key = sk-iHeZopAaLtem7E7FLEM6T3BaakFJsvhz0yVchBkii0oLJl0V
 
 [room]
 id=27661527
@@ -83,6 +90,11 @@ volume = +0%
 [other]
 debug = True
 proxy = 127.0.0.1:7890
+
+[plugin]
+action=False
+schedule=False
+speech=False
 ```
 
 **说明：**
@@ -93,18 +105,16 @@ proxy = 127.0.0.1:7890
 
 ### 安装VTS（Vtuber Studio），获取VTS TOKEN并调试API
 
-- 安装及使用教程网上有，只说明程序部分
-- 打开VTS，开启VTS的API开关
-- 运行`python ./actions`，pyvts会请求vts api（注意：此时VTS会有确认弹窗），控制台会打印当前模型的所有动作 ps:会自动请求embedding，请忽略
-- 配置VTS动作：将所有动作黏贴到actions.py 的live2D_actions列表。每次运行main 程序时，会获取所有live2D_action_emotions的向量。
+- 安装及使用教程网上有，可以配置嘴和音频同步，只说明程序部分
+- action plugin 实现Vtuber根据观众的互动行为匹配动作，可忽略
+  - config.ini 中的action设置为True
+  - 打开VTS，开启VTS的API开关
+  - 给任务的每一个动作重命名为体现动作表情的词，不然没有意义
+  - 运行>> `python ./main action`，pyvts会请求vts api（注意：此时VTS会有确认弹窗）
+  - 会自动生成 action.json
 
-```python
-live2D_actions = ['Heart Eyes', 'Eyes Cry', 'Angry Sign', 'Shock Sign', 'Remove Expressions', 'Anim Shake', 'Sad Shock']
-live2D_action_emotions = ['Heart Eyes', 'Eyes Cry', 'Angry Sign', 'Shock Sign', 'Remove Expressions', 'Anim Shake', 'Sad Shock']
-action_embeddings = sync_get_embedding(live2D_action_emotions)
-```
 
-说明：live2D_action_emotions和action_embeddings的作用？
+说明：action plugin原理？
 
 - 简单说 根据用户发来的弹幕响应对应的动作，先去获取弹幕或者相关信息的向量，用这个向量查找action_embeddings中余弦相似度最接近的向量，也就是最接近的动作，作为响应action。
 - 动作响应不一定依靠embedding，实际效果差强人意，用embedding是因为我有考虑到 后期可以给用户的输入匹配更多上下文。上下文可以来源于任何地方 贴吧、小红书...只要提前生成向量保存到向量数据库即可，让AI主播的回答更丰富。
@@ -113,12 +123,34 @@ action_embeddings = sync_get_embedding(live2D_action_emotions)
 ### 抖音直播配置（可忽略）
 
 - 参考 [抖音弹幕抓取数据推送: 基于系统代理抓包打造的抖音弹幕服务推送程序](https://gitee.com/haodong108/dy-barrage-grab/tree/V2.6.5/BarrageGrab) 
+- 打开正在直播的直播间，数据开始抓取
 
 ### 运行
 
-- 终端输入`python ./main`，正常情况会先打印连接信息，在打印运行debug
+- 方式一：谷歌fire库 命令行方式启动（默认）：确保 main.py fire.Fire(Management)这一行运行，其它注释掉
+- 方式二：正常运行，根据需要运行
+  ```python
+  if __name__ == '__main__':
+    """命令行启动，等同于下面的程序启动"""
+    # fire.Fire(Management)
 
-### OTS
+    """测试"""
+    # >> python main test
+    # Management().test()
+
+    """启动程序"""
+    # >> python main run bilibili
+    # Management().run('BiliBili')
+    # Management().run('DouYin')
+
+    """初始化"""
+    # >> python main action
+    # Management().action()
+  ```
+- 建议先运行测试，检测vpn，再正式运行程序
+- python main action 时用来初始化 action plugin的，可忽略
+
+### OBS
 
 网上有教程
 
@@ -138,6 +170,7 @@ action_embeddings = sync_get_embedding(live2D_action_emotions)
 - 5.13 config.json存取action及向量
 - 5.13 支持通过fire命令行启动
 - 5.13 增加运行前的测试
+- 5.13 插件系统
 
 ## :phone: Contact Me
 

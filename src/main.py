@@ -9,23 +9,22 @@
 import os
 
 import sys
-from langchain import OpenAI
-
-import config
 
 path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, path)
 sys.path.insert(1, os.path.dirname(path))
 
 
-import fire
-
 import threading
-
 import time
 import schedule
 
+import fire
+
+import config
 from prompt_temple import get_schedule_task
+from langchain import OpenAI
+from src.speech_rec import speech_hotkey_listener
 from src.events import UserEvent
 from src.log import worker_logger
 from src.rooms.bilibili import BlLiveRoom
@@ -51,26 +50,41 @@ def dy_producer():
     t_loop.run(dy_connect())
 
 
-def schedule_producer():
-    def send_user_event_2_queue():
+class UserProducer:
+
+    def __init__(self):
+        self.run_funcs = []
+
+    def send_user_event_2_queue(self, task):
         if user_queue.event_queue.empty():
-            ue = UserEvent(get_schedule_task())
+            ue = UserEvent(*task)
             ue.is_high_priority = True
             # ue.action = live2D_actions.index('Anim Shake')
             user_queue.send(ue)
 
-    # 延时启动
-    time.sleep(30)
-    # 清空任务
-    schedule.clear()
-    # 创建一个按5分钟间隔执行任务
-    schedule.every(5).minutes.do(
-        send_user_event_2_queue
-    )
-    while True:
-        schedule.run_pending()
-        time.sleep(10)
+    def create_schedule(self):
+        # 延时启动
+        time.sleep(30)
+        # 清空任务
+        schedule.clear()
+        # 创建一个按5分钟间隔执行任务
+        schedule.every(5).minutes.do(
+            self.send_user_event_2_queue, get_schedule_task()
+        )
+        return schedule
 
+    def run(self):
+        if config.schedule_plugin:
+            schedule_obj = self.create_schedule()
+            self.run_funcs.append(schedule_obj.run_pending)
+        if config.speech_plugin:
+            # self.run_funcs.append(speech_hotkey_listener)
+            speech_hotkey_listener()
+        if self.run_funcs:
+            self.run_funcs.append(lambda: time.sleep(2))
+            while True:
+                for run_fun in self.run_funcs:
+                    run_fun()
 
 # Define the consumer function
 def consumer():
@@ -88,8 +102,8 @@ def consumer():
             worker.run()
             logger.debug(f'worker耗时:{time.time() - t0}')
         except Exception as e:
-            # raise e
-            logger.error(e)
+            raise e
+            # logger.error(e)
         # time.sleep(20)
 
 
@@ -97,7 +111,7 @@ def start_thread(worker_name):
     worker_map = {
         'bl_producer': bl_producer,
         'dy_producer': dy_producer,
-        'schedule_producer': schedule_producer,
+        'user_producer': UserProducer().run,
         'consumer': consumer
     }
     if worker_name not in worker_map:
@@ -121,7 +135,7 @@ class Management:
             start_thread('dy_producer')
         elif name.lower() == 'bilibili':
             start_thread('bl_producer')
-        start_thread('schedule_producer')
+        start_thread('user_producer')
         start_thread('consumer')
 
     def test(self):
@@ -144,7 +158,7 @@ class Management:
 
 
 if __name__ == '__main__':
-    """命令行启动"""
+    """命令行启动，等同于下面的程序启动"""
     fire.Fire(Management)
 
     """测试"""
@@ -157,5 +171,5 @@ if __name__ == '__main__':
     # Management().run('DouYin')
 
     """初始化"""
-    # >> python main run action
+    # >> python main action
     # Management().action()

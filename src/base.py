@@ -51,7 +51,6 @@ class Event:
     @cached_property
     def prompt_messages(self):
         """出口函数，生成prompt，给到llm调用"""
-        print('test_cached_property')
         return get_chat_prompt_template(self.human_template).format_prompt(**self.prompt_kwargs).to_messages()
 
     @abstractmethod

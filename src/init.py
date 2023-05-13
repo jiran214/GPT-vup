@@ -35,7 +35,6 @@ def initialize_openai():
     if proxy:
         os.environ["http_proxy"] = f'http://{proxy}/'
         os.environ["https_proxy"] = f'http://{proxy}/'
-    del _config
 
     @asynccontextmanager
     async def aiohttp_session() -> AsyncIterator[aiohttp.ClientSession]:

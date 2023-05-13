@@ -15,6 +15,7 @@ __pycache__/
 *.tmp.*
 
 *.mp3
+*.wav
 
 env/
 config.ini

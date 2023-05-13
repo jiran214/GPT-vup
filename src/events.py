@@ -6,10 +6,7 @@
  @SoftWare: PyCharm
 """
 import time
-from langchain.prompts import SystemMessagePromptTemplate
 
-from prompt_temple import get_schedule_task
-from src.config import live2D_actions
 from src.base import Event
 
 
@@ -66,7 +63,7 @@ class BlSuperChatMessageEvent(Event):
 
     @property
     def human_template(self):
-        return '{text}'
+        return '{message}'
 
     def get_audio_txt(self, gpt_resp):
         return f"感谢{self._kwargs['user_name']}的sc。{self._kwargs['message']} {gpt_resp}"
@@ -256,9 +253,10 @@ class DyAttentionEvent(Event):
 
 class UserEvent(Event):
 
-    def __init__(self, task):
+    def __init__(self, content, audio_txt_temple):
         super(UserEvent, self).__init__({'type': 'user_event'})
-        self.content, self.audio_txt_temple = task
+        self.content = content
+        self.audio_txt_temple = audio_txt_temple
 
     def get_kwargs(self):
         return {
@@ -267,11 +265,13 @@ class UserEvent(Event):
 
     @property
     def prompt_kwargs(self):
-        return {}
+        return {
+            'content': self.content
+        }
 
     @property
     def human_template(self):
-        return self.content
+        return '{content}'
 
     def get_audio_txt(self, gpt_resp):
         return self.audio_txt_temple.format(gpt_resp)
