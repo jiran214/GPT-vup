@@ -6,10 +6,13 @@
  @SoftWare: PyCharm
 """
 from abc import abstractmethod
+from functools import cached_property
+from typing import Union
 
 import time
 
-from prompt_temple import get_chat_prompt_template
+from src.config import live2D_actions
+from src.prompt_temple import get_chat_prompt_template
 
 
 class Event:
@@ -20,10 +23,9 @@ class Event:
             raise
 
         self._kwargs = self.get_kwargs()
+        self._action = None
         # 是否优先处理
         self.is_high_priority = False
-        # 给这个event的动作
-        self.action_index = None
 
     @abstractmethod
     def get_kwargs(self):
@@ -46,10 +48,11 @@ class Event:
         """每类event对应的模板"""
         return '{text}'
 
-    @property
+    @cached_property
     def prompt_messages(self):
         """出口函数，生成prompt，给到llm调用"""
-        return get_chat_prompt_template(self.human_template).format_prompt(**self.prompt_kwargs)
+        print('test_cached_property')
+        return get_chat_prompt_template(self.human_template).format_prompt(**self.prompt_kwargs).to_messages()
 
     @abstractmethod
     def get_audio_txt(self, *args, **kwargs):
@@ -60,3 +63,19 @@ class Event:
     def time(self):
         """易读的时间"""
         return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self._kwargs['time']))
+
+    @property
+    def action(self) -> Union[None, str, int]:
+        """
+        :return:
+            None: 该event不做任何动作
+            str: zero-shot 匹配动作
+            int: 通过索引固定 做某个动作
+        """
+        return self._action
+
+    @action.setter
+    def action(self, value: Union[None, str, int]):
+        if value in live2D_actions:
+            self._action = live2D_actions.index(value)
+        self._action = value

@@ -5,20 +5,17 @@
  @DateTime: 2023/4/7 15:21
  @SoftWare: PyCharm
  urllib3==1.25.11
+ 该文件已弃用
 """
 import asyncio
 import os
 
-import numpy as np
 import time
-from contextlib import asynccontextmanager
 from typing import AsyncIterator, List
 
 import aiohttp
 import openai
-from aiohttp import TCPConnector
 from openai import api_requestor
-from scipy import spatial
 
 import requests.adapters
 import urllib3
@@ -64,11 +61,6 @@ session = make_session()
 
 # conn = aiohttp.TCPConnector(limit_per_host=5, ssl=False)
 
-@asynccontextmanager
-async def aiohttp_session() -> AsyncIterator[aiohttp.ClientSession]:
-    async with aiohttp.ClientSession(connector=TCPConnector(limit_per_host=5, ssl=False), trust_env=True) as session:
-    # async with aiohttp.ClientSession(trust_env=True) as session:
-        yield session
 
 
 # 猴子补丁
@@ -113,35 +105,16 @@ def sync_chat(system_content, user_content):
     return response['choices'][0]['message']['content']
 
 
-def top_n_indices_from_embeddings(
-        query_embedding: List[float],
-        embeddings: List[List[float]],
-        distance_metric="cosine",
-        top=1
-) -> list:
-    """Return the distances between a query embedding and a list of embeddings."""
-    distance_metrics = {
-        "cosine": spatial.distance.cosine,
-        "L1": spatial.distance.cityblock,
-        "L2": spatial.distance.euclidean,
-        "Linf": spatial.distance.chebyshev,
-    }
-    distances = [
-        distance_metrics[distance_metric](query_embedding, embedding)
-        for embedding in embeddings
-    ]
-    top_n_indices = np.argsort(distances)[:top]
-    return top_n_indices
 
 
 if __name__ == '__main__':
-    for _ in range(5):
+    for _ in range(2):
         t1 = time.time()
         # print(len(sync_chat('你是个AI主播', '该昵称已创建 进入直播间。请表示欢迎！并简短聊聊他加入的粉丝团苏北')))
-        print(len(sync_get_embedding(['该昵称已创建 进入直播间。请表示欢迎！并简短聊聊他加入的粉丝团苏北'])))
+        # print(len(await async_get_embedding(['该昵称已创建 进入直播间。请表示欢迎！并简短聊聊他加入的粉丝团苏北'])))
         # policy = asyncio.WindowsSelectorEventLoopPolicy()
         # asyncio.set_event_loop_policy(policy)
         loop = asyncio.get_event_loop()
         loop.run_until_complete(async_chat('你是个AI主播', '该昵称已创建 进入直播间。请表示欢迎！并简短聊聊他加入的粉丝团苏北'))
-        print(time.time() - t1)
-        time.sleep(4)
+        # print(time.time() - t1)
+        # time.sleep(4)

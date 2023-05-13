@@ -135,6 +135,9 @@ action_embeddings = sync_get_embedding(live2D_action_emotions)
 
 - 4.26 支持抖音直播
 - 5.13 LangChain重构prompt部分
+- 5.13 config.json存取action及向量
+- 5.13 支持通过fire命令行启动
+- 5.13 增加运行前的测试
 
 ## :phone: Contact Me
 

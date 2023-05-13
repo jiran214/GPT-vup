@@ -6,12 +6,18 @@
  @SoftWare: PyCharm
 """
 import asyncio
+import json
 import queue
 
 from threading import Lock
 from dataclasses import dataclass
 
 from typing import List, Union, Dict
+
+import numpy as np
+import openai
+from scipy import spatial
+
 from src.base import Event
 from src.log import worker_logger
 
@@ -99,6 +105,34 @@ class UserQueue:
 
 user_queue = UserQueue()
 
+
+def top_n_indices_from_embeddings(
+        query_embedding: List[float],
+        embeddings: List[List[float]],
+        distance_metric="cosine",
+        top=1
+) -> list:
+    """Return the distances between a query embedding and a list of embeddings."""
+    distance_metrics = {
+        "cosine": spatial.distance.cosine,
+        "L1": spatial.distance.cityblock,
+        "L2": spatial.distance.euclidean,
+        "Linf": spatial.distance.chebyshev,
+    }
+    distances = [
+        distance_metrics[distance_metric](query_embedding, embedding)
+        for embedding in embeddings
+    ]
+    top_n_indices = np.argsort(distances)[:top]
+    return top_n_indices
+
+
+async def async_get_embedding(texts: List[str], model="text-embedding-ada-002"):
+    res = await openai.Embedding.acreate(input=texts, model=model)
+    if len(texts) == 1:
+        return res['data'][0]['embedding']
+    else:
+        return [d['embedding'] for d in res['data']]
 
 if __name__ == '__main__':
     a = GPT35Params(messages=[])

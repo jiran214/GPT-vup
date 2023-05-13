@@ -5,22 +5,36 @@
  @DateTime: 2023/4/23 13:19
  @SoftWare: PyCharm
 """
-# Create a high-priority queue with a maximum size of 5
+
+import os
+
+import sys
+from langchain import OpenAI
+
+import config
+
+path = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, path)
+sys.path.insert(1, os.path.dirname(path))
+
+
+import fire
+
 import threading
 
 import time
-import random
 import schedule
 
 from prompt_temple import get_schedule_task
-from src.actions import live2D_actions
 from src.events import UserEvent
 from src.log import worker_logger
 from src.rooms.bilibili import BlLiveRoom
 from src.rooms.douyin import dy_connect
 
 from src.utils import user_queue, NewEventLoop
-from src.workers import EventWorker
+from src.workers import VtuBer
+from src.init import initialize_openai, initialize_action
+
 
 logger = worker_logger
 
@@ -37,13 +51,14 @@ def dy_producer():
     t_loop.run(dy_connect())
 
 
-def user_producer():
+def schedule_producer():
     def send_user_event_2_queue():
         if user_queue.event_queue.empty():
             ue = UserEvent(get_schedule_task())
             ue.is_high_priority = True
-            ue.action_index = live2D_actions.index('Anim Shake')
+            # ue.action = live2D_actions.index('Anim Shake')
             user_queue.send(ue)
+
     # 延时启动
     time.sleep(30)
     # 清空任务
@@ -68,7 +83,7 @@ def consumer():
             logger.debug('consumer waiting')
             continue
 
-        worker = EventWorker(event)
+        worker = VtuBer(event)
         try:
             worker.run()
             logger.debug(f'worker耗时:{time.time() - t0}')
@@ -82,7 +97,7 @@ def start_thread(worker_name):
     worker_map = {
         'bl_producer': bl_producer,
         'dy_producer': dy_producer,
-        'user_producer': user_producer,
+        'schedule_producer': schedule_producer,
         'consumer': consumer
     }
     if worker_name not in worker_map:
@@ -92,20 +107,55 @@ def start_thread(worker_name):
     thread.start()
 
 
-class Master:
+class Management:
 
-    def __init__(self, name):
-        self.name = name
+    def __init__(self):
+        initialize_openai()
 
-    def run(self):
-        if self.name == 'DouYin':
+    def action(self):
+        loop = NewEventLoop()
+        loop.run(initialize_action())
+
+    def run(self, name):
+        if name.lower() == 'douyin':
             start_thread('dy_producer')
-        elif self.name == 'BiliBili':
+        elif name.lower() == 'bilibili':
             start_thread('bl_producer')
-        start_thread('user_producer')
+        start_thread('schedule_producer')
         start_thread('consumer')
+
+    def test(self):
+        # 检查库是否安装完全
+        try:
+            import openai, langchain, aiohttp, requests, bilibili_api
+        except Exception as e:
+            raise e
+        # 测试外网环境(可能异常)
+        r = requests.get(url='https://www.youtube.com/', verify=False, proxies={
+            'http': f'http://{config.proxy}/',
+            'https': f'http://{config.proxy}/'
+        })
+        assert r.status_code == 200
+        # 测试openai库
+        llm = OpenAI(temperature=0.9)
+        text = "跟我说 python是世界上最好的语言 "
+        print(llm(text))
+        print('测试成功！')
 
 
 if __name__ == '__main__':
-    # Master('DouYin').run()
-    Master('BiliBili').run()
+    """命令行启动"""
+    fire.Fire(Management)
+
+    """测试"""
+    # >> python main test
+    # Management().test()
+
+    """启动程序"""
+    # >> python main run bilibili
+    # Management().run('BiliBili')
+    # Management().run('DouYin')
+
+    """初始化"""
+    # >> python main run action
+    # Management().action()

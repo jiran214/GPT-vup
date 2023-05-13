@@ -9,11 +9,15 @@ import time
 from langchain.prompts import SystemMessagePromptTemplate
 
 from prompt_temple import get_schedule_task
-from src.actions import live2D_actions
+from src.config import live2D_actions
 from src.base import Event
 
 
 class BlDanmuMsgEvent(Event):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.action = self._kwargs['content']
 
     def get_kwargs(self):
         return {
@@ -41,6 +45,7 @@ class BlSuperChatMessageEvent(Event):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.is_high_priority = True
+        self.action = self._kwargs['message']
 
     def get_kwargs(self):
         info = self._event_dict['data']['data']
@@ -101,7 +106,6 @@ class BlInteractWordEvent(Event):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.action_index = live2D_actions.index('Shock Sign')
 
     def get_kwargs(self):
         info = self._event_dict['data']['data']
