@@ -66,7 +66,7 @@ pip install -r .\requirements.txt
 
 ### 配置config
 
-在backend目录下创建配置文件config.ini模板(该项目所有配置信息都在这)
+在src目录下创建配置文件config.ini(该项目所有配置信息都在这)
 
 ```ini
 [openai]
