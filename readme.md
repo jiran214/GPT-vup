@@ -67,8 +67,8 @@ git https://github.com/jiran214/GPT-vup.git
 cd src
 # 建议命令行或者pycharm创建虚拟环境并激活
 python -m pip install --upgrade pip pip
-# 可能会依赖冲突
-pip install -r .\requirements.txt
+# 可能会依赖冲突，没法彻底解决
+pip install -r .\requirements.txt --no-deps
 ```
 
 ### 配置config
@@ -171,6 +171,7 @@ speech=False
 - 5.13 支持通过fire命令行启动
 - 5.13 增加运行前的测试
 - 5.13 插件系统
+- 5.14 requirements 修改，bilibili_api库没有更新，没法彻底解决依赖，请在pip install后面加上--no-deps
 
 ## :phone: Contact Me
 
