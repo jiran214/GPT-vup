@@ -18,6 +18,7 @@ _config.read(file_path)
 tss_settings = dict(_config.items('edge-tss'))
 
 api_key = _config.get('openai', 'api_key')
+os.environ.setdefault("OPENAI_API_KEY", api_key)
 room_id = _config.getint('room', 'id')
 debug = _config.getboolean('other', 'debug')
 proxy = _config.get('other', 'proxy')
