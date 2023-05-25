@@ -19,3 +19,7 @@ __pycache__/
 
 env/
 config.ini
+
+.python-version
+venv
+.DS_Store
