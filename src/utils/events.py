@@ -7,7 +7,7 @@
 """
 import time
 
-from src.base import Event
+from src.utils.utils import Event
 
 
 class BlDanmuMsgEvent(Event):

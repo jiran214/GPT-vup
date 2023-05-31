@@ -14,7 +14,6 @@ path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, path)
 sys.path.insert(1, os.path.dirname(path))
 
-
 import threading
 import time
 import schedule
@@ -22,18 +21,17 @@ import schedule
 import fire
 
 import config
-from prompt_temple import get_schedule_task
+from src.utils.utils import get_schedule_task
 from langchain import OpenAI
-from src.speech_rec import speech_hotkey_listener
-from src.events import UserEvent
-from src.log import worker_logger
+from src.modules.speech_rec import speech_hotkey_listener
+from src.utils.utils import UserEvent
+from src.utils.utils import worker_logger
 from src.rooms.bilibili import BlLiveRoom
 from src.rooms.douyin import dy_connect
 
-from src.utils import user_queue, NewEventLoop
+from src.utils.utils import user_queue, NewEventLoop
 from src.workers import VtuBer
-from src.init import initialize_openai, initialize_action
-
+from src.utils.init import initialize_openai, initialize_action
 
 logger = worker_logger
 
@@ -85,6 +83,7 @@ class UserProducer:
             while True:
                 for run_fun in self.run_funcs:
                     run_fun()
+
 
 # Define the consumer function
 def consumer():

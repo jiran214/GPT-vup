@@ -13,9 +13,9 @@ import speech_recognition as sr
 import keyboard
 
 # 定义参数
-from src.events import UserEvent
-from src.log import request_logger
-from src.utils import user_queue
+from src.utils.utils import UserEvent
+from src.utils.utils import request_logger
+from src.utils.utils import user_queue
 
 CHUNK = 1024
 FORMAT = pyaudio.paInt16

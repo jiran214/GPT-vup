@@ -5,8 +5,6 @@
  @DateTime: 2023/4/25 21:56
  @SoftWare: PyCharm
 """
-import asyncio
-import time
 
 import aiohttp
 
@@ -14,8 +12,8 @@ import json
 
 from bilibili_api import sync
 
-from src.events import DyDanmuMsgEvent, DyAttentionEvent, DySendGiftEvent, DyCkEvent, DyWelcomeWordEvent
-from src.utils import user_queue
+from src.utils.utils import DyDanmuMsgEvent, DyAttentionEvent, DySendGiftEvent, DyCkEvent, DyWelcomeWordEvent
+from src.utils.utils import user_queue
 
 
 def msg(event_dict):

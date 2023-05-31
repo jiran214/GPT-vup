@@ -12,7 +12,7 @@ from typing import Union
 import time
 
 from src.config import live2D_actions
-from src.prompt_temple import get_chat_prompt_template
+from src.utils.prompt_temple import get_chat_prompt_template
 
 
 class Event:

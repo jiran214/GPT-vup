@@ -20,14 +20,14 @@ from aiohttp import TCPConnector
 from openai import api_requestor
 import openai
 
-from src.actions import plugin_info
+from src.modules.actions import plugin_info
 
 urllib3.disable_warnings()
 
 
 def initialize_openai():
     # 避免循环导入，多一次读取ini配置
-    file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config.ini')
+    file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../config.ini')
     _config = configparser.RawConfigParser()
     _config.read(file_path)
 

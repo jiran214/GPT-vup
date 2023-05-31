@@ -5,15 +5,14 @@
  @DateTime: 2023/4/24 14:16
  @SoftWare: PyCharm
 """
-import time
 
 import edge_tts
 import config
 
 from pygame import mixer, time as pygame_time
 
-from src.log import worker_logger
-from src.utils import audio_lock
+from src.utils.utils import worker_logger
+from src.utils.utils import audio_lock
 
 logger = worker_logger
 

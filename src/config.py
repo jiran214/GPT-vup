@@ -19,6 +19,8 @@ tss_settings = dict(_config.items('edge-tss'))
 
 api_key = _config.get('openai', 'api_key')
 room_id = _config.getint('room', 'id')
+mysql = dict(_config.items('mysql'))
+milvus = dict(_config.items('milvus'))
 debug = _config.getboolean('other', 'debug')
 proxy = _config.get('other', 'proxy')
 

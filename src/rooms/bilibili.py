@@ -8,10 +8,10 @@
 from bilibili_api import live, sync
 
 from src import config
-from src.events import BlDanmuMsgEvent, BlSendGiftEvent, BlSuperChatMessageEvent, BlInteractWordEvent
-from src.log import worker_logger
+from src.utils.utils import BlDanmuMsgEvent, BlSendGiftEvent, BlSuperChatMessageEvent, BlInteractWordEvent
+from src.utils.utils import worker_logger
 
-from src.utils import user_queue
+from src.utils.utils import user_queue
 
 
 logger = worker_logger

@@ -6,7 +6,6 @@
  @SoftWare: PyCharm
 """
 import asyncio
-import json
 import queue
 
 from threading import Lock
@@ -16,13 +15,15 @@ from typing import List, Union, Dict
 
 import numpy as np
 import openai
+from pymilvus import connections
 from scipy import spatial
 
-from src.base import Event
-from src.log import worker_logger
+from src import config
+from src.utils.base import Event
+from src.utils.init import initialize_openai
+from src.utils.log import worker_logger
 
 logger = worker_logger
-
 audio_lock = Lock()
 
 
@@ -127,13 +128,47 @@ def top_n_indices_from_embeddings(
     return top_n_indices
 
 
-async def async_get_embedding(texts: List[str], model="text-embedding-ada-002"):
-    res = await openai.Embedding.acreate(input=texts, model=model)
-    if len(texts) == 1:
+def sync_get_embedding(texts: List[str], model="text-embedding-ada-002"):
+    print('texts', texts)
+    res = openai.Embedding.create(input=texts, model=model)
+    if isinstance(texts, list) and len(texts) == 1:
         return res['data'][0]['embedding']
     else:
         return [d['embedding'] for d in res['data']]
 
+
+class VectorStore:
+    def __init__(self, name):
+        try:
+            from pymilvus import Collection
+        except:
+            raise 'Please run pip install pymilvus==2.1'
+
+        connections.connect(
+            alias="default",
+            host=config.milvus['host'],
+            port=config.milvus['port']
+        )
+
+        self.collection = Collection(name)  # Get an existing collection.
+        # num_entities = self.collection.num_entities
+        self.collection.load()
+        self.search_params = {"metric_type": "L2", "params": {"nprobe": 10}}
+
+    def search_top_n_from_milvus(self, limit, embedding):
+        results = self.collection.search(
+            data=[embedding],
+            anns_field="embedding",
+            param=self.search_params,
+            limit=limit,
+            expr=None,
+            consistency_level="Strong",
+            # output_fields='hash_id'
+        )
+        return results
+
+
 if __name__ == '__main__':
-    a = GPT35Params(messages=[])
-    print(a.dict())
+    initialize_openai()
+    # print()
+    print(VectorStore('sun_ba').search_top_n_from_milvus(3, sync_get_embedding(texts=['hello']))[0])

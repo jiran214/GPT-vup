@@ -8,17 +8,16 @@
 import asyncio
 import threading
 import time
-from bilibili_api import sync
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings import OpenAIEmbeddings
 
 from src import config
-from src.config import live2D_actions, live2D_embeddings
-from src.actions import play_action
-from src.audio import tts_save, play_sound
-from src.log import worker_logger
-from src.base import Event
-from src.utils import audio_lock, NewEventLoop, top_n_indices_from_embeddings
+from src.config import live2D_embeddings
+from src.modules.actions import play_action
+from src.modules.audio import tts_save, play_sound
+from src.utils.utils import worker_logger
+from src.utils.utils import Event
+from src.utils.utils import audio_lock, NewEventLoop, top_n_indices_from_embeddings
 
 logger = worker_logger
 
