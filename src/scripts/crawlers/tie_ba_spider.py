@@ -3,7 +3,7 @@ import requests
 try:
     from parsel import Selector
     import pymysql
-except ImportError::
+except ImportError:
     raise 'Please run pip install parsel pymysql cryptography'
 
 

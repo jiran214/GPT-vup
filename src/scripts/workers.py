@@ -2,7 +2,7 @@ from pymilvus import FieldSchema, Collection, CollectionSchema, DataType, has_co
 
 from src import config
 from src.db.mysql import get_session
-from src.db.models import TieBa
+from src.db.models import Document, TieBa
 from src.utils.init import initialize_openai
 from src.utils.utils import sync_get_embedding
 
@@ -26,7 +26,7 @@ class EmbeddingWorker:
         self.limit_num = limit_num
         self.embedding_query_max_length = embedding_query_num
 
-    def search_rows_no_embedding(self, model: TieBa):
+    def search_rows_no_embedding(self, model: Document):
         while 1:
             with get_session() as s:
                 rows = s.query(model).filter(model.embedding_state == False).limit(self.limit_num).all()
