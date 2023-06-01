@@ -3,12 +3,12 @@ import requests
 try:
     from parsel import Selector
     import pymysql
-except:
+except ImportError::
     raise 'Please run pip install parsel pymysql cryptography'
 
 
 from src.db.mysql import get_session
-from src.scripts.models import TieBa
+from src.db.models import TieBa
 
 pymysql.install_as_MySQLdb()
 
@@ -53,7 +53,7 @@ class Ba:
             }
             content_list = tie.xpath(
                 """.//div[@class='d_post_content j_d_post_content ']//text()""").getall()
-            content = ' '.join(content_list).strip()
+            content = ' '.join(content_list).strip().replace(' ', '')
             data_dict['hash_id'] = str(hash(content))
             data_dict['content'] = content
 

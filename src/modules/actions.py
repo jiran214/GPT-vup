@@ -5,9 +5,6 @@
  @DateTime: 2023/4/24 0:01
  @SoftWare: PyCharm
 """
-import asyncio
-import pyvts
-
 from src.config import live2D_actions
 
 plugin_info = {
@@ -18,6 +15,10 @@ plugin_info = {
 
 
 async def play_action(action_index):
+    try:
+        import pyvts
+    except ImportError:
+        raise 'Please run pip install pyvts'
     vts = pyvts.vts(plugin_info=plugin_info)
     await vts.connect()
     await vts.read_token()

@@ -11,6 +11,7 @@ from typing import Union
 
 import time
 
+from src import config
 from src.config import live2D_actions
 from src.utils.prompt_temple import get_chat_prompt_template
 
@@ -48,10 +49,13 @@ class Event:
         """每类event对应的模板"""
         return '{text}'
 
-    @cached_property
-    def prompt_messages(self):
+    def get_prompt_messages(self, **kwargs):
         """出口函数，生成prompt，给到llm调用"""
-        return get_chat_prompt_template(self.human_template).format_prompt(**self.prompt_kwargs).to_messages()
+        if config.context_plugin and 'context' in kwargs:
+            human_template = '上下文:{context}\n问题:' + self.human_template
+        else:
+            human_template = self.human_template
+        return get_chat_prompt_template(human_template).format_prompt(**self.prompt_kwargs, **kwargs).to_messages()
 
     @abstractmethod
     def get_audio_txt(self, *args, **kwargs):

@@ -10,9 +10,8 @@ import aiohttp
 
 import json
 
-from bilibili_api import sync
 
-from src.utils.utils import DyDanmuMsgEvent, DyAttentionEvent, DySendGiftEvent, DyCkEvent, DyWelcomeWordEvent
+from src.utils.events import DyDanmuMsgEvent, DyAttentionEvent, DySendGiftEvent, DyCkEvent, DyWelcomeWordEvent
 from src.utils.utils import user_queue
 
 
@@ -80,4 +79,5 @@ async def dy_connect():
 
 
 if __name__ == '__main__':
+    from bilibili_api import sync
     sync(dy_connect())

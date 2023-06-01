@@ -7,7 +7,7 @@
 """
 
 import edge_tts
-import config
+from src import config
 
 from pygame import mixer, time as pygame_time
 

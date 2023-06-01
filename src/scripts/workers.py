@@ -1,9 +1,8 @@
-from bilibili_api import sync
 from pymilvus import FieldSchema, Collection, CollectionSchema, DataType, has_collection
 
 from src import config
 from src.db.mysql import get_session
-from src.scripts.models import TieBa
+from src.db.models import TieBa
 from src.utils.init import initialize_openai
 from src.utils.utils import sync_get_embedding
 
@@ -14,7 +13,7 @@ class EmbeddingWorker:
         try:
             from pymilvus import FieldSchema, DataType
             from pymilvus import connections
-        except:
+        except ImportError:
             raise 'Please run pip install pymilvus==2.1'
 
         initialize_openai()
@@ -119,16 +118,18 @@ class EmbeddingWorker:
         else:
             collection = Collection(name)
 
+        print(collection.num_entities)
         for rows_no_embedding, rows_content_list in self.search_rows_no_embedding(model):
             entries = self.query_embedding(rows_no_embedding, rows_content_list)
             if self.push_2_milvus(collection, entries):
                 with get_session() as s:
                     for tie in rows_no_embedding:
                         tie.embedding_state = True
-            print('over')
+        print('over')
+        print(collection.num_entities)
 
 
 if __name__ == '__main__':
+    # with get_session() as s:
+    #     s.query(TieBa).update({'embedding_state': False})
     EmbeddingWorker().run('sun_ba', '孙笑川吧', TieBa)
-
-    # data = [['-498603715 你没事吧，这一看就是你们男宝反串的。你怎么自挂东南枝？']]

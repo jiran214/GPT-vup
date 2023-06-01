@@ -14,7 +14,6 @@ from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
 import aiohttp
-import pyvts
 import urllib3
 from aiohttp import TCPConnector
 from openai import api_requestor
@@ -30,6 +29,8 @@ def initialize_openai():
     file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../config.ini')
     _config = configparser.RawConfigParser()
     _config.read(file_path)
+    api_key = _config.get('openai', 'api_key')
+    os.environ['OPENAI_API_KEY'] = api_key
 
     proxy = _config.get('other', 'proxy')
     if proxy:
@@ -47,6 +48,10 @@ def initialize_openai():
 
 async def initialize_action():
     # websocket连接 获取token到本地
+    try:
+        import pyvts
+    except ImportError:
+        raise 'Please run pip install pyvts'
     vts = pyvts.vts(plugin_info=plugin_info)
     await vts.connect()
     print('请在live2D VTS弹窗中点击确认！')

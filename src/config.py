@@ -18,6 +18,7 @@ _config.read(file_path)
 tss_settings = dict(_config.items('edge-tss'))
 
 api_key = _config.get('openai', 'api_key')
+temperature = _config.get('openai', 'temperature')
 room_id = _config.getint('room', 'id')
 mysql = dict(_config.items('mysql'))
 milvus = dict(_config.items('milvus'))
@@ -27,6 +28,7 @@ proxy = _config.get('other', 'proxy')
 action_plugin = _config.getboolean('plugin', 'action')
 schedule_plugin = _config.getboolean('plugin', 'schedule')
 speech_plugin = _config.getboolean('plugin', 'speech')
+context_plugin = _config.getboolean('plugin', 'context')
 
 try:
     live2D_actions = []

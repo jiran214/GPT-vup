@@ -13,8 +13,12 @@ from langchain.embeddings import OpenAIEmbeddings
 
 from src import config
 from src.config import live2D_embeddings
+from src.db.milvus import VectorStore
+from src.db.models import TieBa
+from src.db.mysql import get_session
 from src.modules.actions import play_action
 from src.modules.audio import tts_save, play_sound
+from src.utils.events import BlDanmuMsgEvent
 from src.utils.utils import worker_logger
 from src.utils.utils import Event
 from src.utils.utils import audio_lock, NewEventLoop, top_n_indices_from_embeddings
@@ -23,7 +27,7 @@ logger = worker_logger
 
 base_path = './static/voice/{}.mp3'
 
-chat = ChatOpenAI(temperature=0.9, max_retries=2, max_tokens=150)
+chat = ChatOpenAI(temperature=config.temperature, max_retries=2, max_tokens=150)
 embeddings = OpenAIEmbeddings()
 
 
@@ -32,10 +36,20 @@ class VtuBer:
         self.event = event
         self.sound_path = base_path.format(int(time.time()))
 
-    async def generate_chat(self):
+    async def generate_chat(self, embedding):
+        # 额外参数
+        extra_kwargs = {}
+        # 只给弹幕增加上下文
+        if config.context_plugin and isinstance(self.event, BlDanmuMsgEvent):
+            ids = VectorStore(config.milvus['collection']).search_top_n_from_milvus(int(config.milvus['top_n']), embedding)[0].ids
+            with get_session() as s:
+                rows = s.query(TieBa).filter(TieBa.hash_id.in_(str(hash_id) for hash_id in ids)).all()
+                context = [row.content for row in rows]
+                extra_kwargs['context'] = str(context)
         # 请求GPT
-        logger.debug(f"prompt:{self.event.prompt_messages[1]} 开始请求gpt")
-        llm_res = chat.generate([self.event.prompt_messages])
+        messages = self.event.get_prompt_messages(**extra_kwargs)
+        logger.debug(f"prompt:{messages[1]} 开始请求gpt")
+        llm_res = chat.generate([messages])
         assistant_content = llm_res.generations[0][0].text
         # 使用 Edge TTS 生成回复消息的语音文件
         logger.debug(f"开始生成TTS 文件")
@@ -43,13 +57,11 @@ class VtuBer:
         await tts_save(self.event.get_audio_txt(assistant_content), self.sound_path)
         logger.debug(f"tts请求耗时:{time.time()-t0}")
 
-    async def generate_action(self):
+    async def generate_action(self, embedding):
         if isinstance(self.event.action, str):
             # 是否手动设置
             logger.debug(f"开始生成动作")
             t0 = time.time()
-            # 获取词向量
-            embedding = embeddings.embed_query(self.event.action)
             # 匹配动作
             self.event.action = int(top_n_indices_from_embeddings(embedding, live2D_embeddings, top=1)[0])
             logger.debug(f"动作请求耗时:{time.time()-t0}")
@@ -71,9 +83,20 @@ class VtuBer:
         # time.sleep(5)
 
     async def _run(self):
-        tasks = [asyncio.create_task(self.generate_chat())]
+        # 获取词向量
+        str_tuple = ('text', 'content', 'message', 'user_name')
+        prompt_kwargs = self.event.prompt_kwargs.copy()
+        embedding_str = None
+        for key in str_tuple:
+            if key in prompt_kwargs:
+                embedding_str = prompt_kwargs[key]
+                break
+        if not embedding_str:
+            raise '不应该不存在'
+        embedding = embeddings.embed_query(embedding_str)
+        tasks = [asyncio.create_task(self.generate_chat(embedding))]
         if config.action_plugin and self.event.action:
-            tasks.append(asyncio.create_task(self.generate_action()))
+            tasks.append(asyncio.create_task(self.generate_action(embedding)))
         await asyncio.gather(*tasks)
         await self.output()
 

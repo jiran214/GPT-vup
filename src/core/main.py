@@ -5,33 +5,20 @@
  @DateTime: 2023/4/23 13:19
  @SoftWare: PyCharm
 """
-
-import os
-
-import sys
-
-path = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, path)
-sys.path.insert(1, os.path.dirname(path))
-
 import threading
 import time
 import schedule
 
-import fire
 
-import config
-from src.utils.utils import get_schedule_task
-from langchain import OpenAI
-from src.modules.speech_rec import speech_hotkey_listener
-from src.utils.utils import UserEvent
+from src import config
+from src.utils.prompt_temple import get_schedule_task
+from src.utils.events import UserEvent
 from src.utils.utils import worker_logger
 from src.rooms.bilibili import BlLiveRoom
 from src.rooms.douyin import dy_connect
 
 from src.utils.utils import user_queue, NewEventLoop
-from src.workers import VtuBer
-from src.utils.init import initialize_openai, initialize_action
+from src.core.vup import VtuBer
 
 logger = worker_logger
 
@@ -76,6 +63,10 @@ class UserProducer:
             schedule_obj = self.create_schedule()
             self.run_funcs.append(schedule_obj.run_pending)
         if config.speech_plugin:
+            try:
+                from src.modules.speech_rec import speech_hotkey_listener
+            except ImportError:
+                raise 'Please run pip install pyaudio speech_recognition keyboard'
             # self.run_funcs.append(speech_hotkey_listener)
             speech_hotkey_listener()
         if self.run_funcs:
@@ -120,55 +111,3 @@ def start_thread(worker_name):
     thread.start()
 
 
-class Management:
-
-    def __init__(self):
-        initialize_openai()
-
-    def action(self):
-        loop = NewEventLoop()
-        loop.run(initialize_action())
-
-    def run(self, name):
-        if name.lower() == 'douyin':
-            start_thread('dy_producer')
-        elif name.lower() == 'bilibili':
-            start_thread('bl_producer')
-        start_thread('user_producer')
-        start_thread('consumer')
-
-    def test(self):
-        # 检查库是否安装完全
-        try:
-            import openai, langchain, aiohttp, requests, bilibili_api
-        except Exception as e:
-            raise e
-        # 测试外网环境(可能异常)
-        r = requests.get(url='https://www.youtube.com/', verify=False, proxies={
-            'http': f'http://{config.proxy}/',
-            'https': f'http://{config.proxy}/'
-        })
-        assert r.status_code == 200
-        # 测试openai库
-        llm = OpenAI(temperature=0.9)
-        text = "跟我说 python是世界上最好的语言 "
-        print(llm(text))
-        print('测试成功！')
-
-
-if __name__ == '__main__':
-    """命令行启动，等同于下面的程序启动"""
-    fire.Fire(Management)
-
-    """测试"""
-    # >> python main test
-    # Management().test()
-
-    """启动程序"""
-    # >> python main run bilibili
-    # Management().run('BiliBili')
-    # Management().run('DouYin')
-
-    """初始化"""
-    # >> python main action
-    # Management().action()

@@ -5,10 +5,9 @@
  @DateTime: 2023/4/22 21:23
  @SoftWare: PyCharm
 """
-from bilibili_api import live, sync
 
 from src import config
-from src.utils.utils import BlDanmuMsgEvent, BlSendGiftEvent, BlSuperChatMessageEvent, BlInteractWordEvent
+from src.utils.events import BlDanmuMsgEvent, BlSendGiftEvent, BlSuperChatMessageEvent, BlInteractWordEvent
 from src.utils.utils import worker_logger
 
 from src.utils.utils import user_queue
@@ -19,6 +18,10 @@ logger = worker_logger
 
 class BlLiveRoom:
     def __init__(self, bl_room_id=config.room_id):
+        try:
+            from bilibili_api import live, sync
+        except ImportError:
+            raise 'Please run pip install bilibili_api --no-deps'
         self.room = live.LiveDanmaku(bl_room_id)
         self.add_event_listeners()
 
