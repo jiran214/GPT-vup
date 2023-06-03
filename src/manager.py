@@ -80,7 +80,7 @@ class Management:
 
 if __name__ == '__main__':
     """命令行启动，等同于下面的程序启动"""
-    # fire.Fire(Management)
+    fire.Fire(Management)
 
     """测试"""
     # >> python main test
@@ -88,7 +88,7 @@ if __name__ == '__main__':
 
     """启动程序"""
     # >> python main run bilibili
-    Management().run('BiliBili')
+    # Management().run('BiliBili')
     # Management().run('DouYin')
 
     """初始化"""
