@@ -67,7 +67,7 @@ pip install -r .\requirements.txt
 - 程序会自动生成 action.json
 - 如果需要更新动作，请重复上述步骤
 ### 实验功能：context plugin：给对话补充上下文
-- 前提1：Docker![安装milvus2.0单机版本](https://milvus.io/docs/v2.0.x/install_standalone-docker.md)，并设置 config.ini -> milvus -> host and port
+- 前提1：Docker[安装milvus2.0单机版本](https://milvus.io/docs/v2.0.x/install_standalone-docker.md)，并设置 config.ini -> milvus -> host and port
 - 前提2：Mysql环境，并设置 config.ini -> mysql -> uri
 - config.ini -> plugin -> context 设置为True
 - 运行>> `pip install pymilvus==2.0`
@@ -76,7 +76,7 @@ pip install -r .\requirements.txt
 - utils/prompt_temple.py 的 system_template 可以更改vup的初始设定
 ## 更新日志
 - V2.0 支持context plugin，目录重构、更简单的readme，解决依赖混乱的问题
-- V1.0 ![旧版本内容]((https://raw.githubusercontent.com/jiran214/GPT-vup/master/public/readme_v1.md)
+- V1.0 [旧版本内容](https://raw.githubusercontent.com/jiran214/GPT-vup/master/public/readme_v1.md)
 ## to do list
 - [ ] speech plugin 阻塞问题
 - [ ] context plugin优化
