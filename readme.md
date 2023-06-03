@@ -50,11 +50,11 @@ pip install -r .\requirements.txt
   - 嘴型同步声音，在mouthOpen的输入参数设置为声音频率、或者声音音量
 - 如果需要更好的直播效果，请自行了解更多
 ## 进阶
-### speech：语音交互
+### speech plugin：语音交互
 - config.ini -> plugin -> speech 设置为True
 - 运行>> `pip install pyaudio speech_recognition keyboard`
 - 程序启动后按住 ctrl+T 说话，自动语音转文字，vup会听到你说的话
-### schedule：隔一段时间触发某一事件，讲故事、唱rap...
+### schedule plugin：隔一段时间触发某一事件，讲故事、唱rap...
 - config.ini -> plugin -> schedule 设置为True
 - utils/prompt_temple.py 的schedule_task_temple_list列表有我写好的触发事件
 ### action plugin：VTS动作表情交互
@@ -76,7 +76,7 @@ pip install -r .\requirements.txt
 - utils/prompt_temple.py 的 system_template 可以更改vup的初始设定
 ## 更新日志
 - V2.0 支持context plugin，目录重构、更简单的readme，解决依赖混乱的问题
-- V1.0 [旧版本内容](https://raw.githubusercontent.com/jiran214/GPT-vup/master/public/readme_v1.md)
+- V1.0 [旧版本内容](https://github.com/jiran214/GPT-vup/tree/1.0)
 ## to do list
 - [ ] speech plugin 阻塞问题
 - [ ] context plugin优化
