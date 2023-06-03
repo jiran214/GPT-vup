@@ -48,12 +48,13 @@ class VtuBer:
                 extra_kwargs['context'] = str(context)
         # 请求GPT
         messages = self.event.get_prompt_messages(**extra_kwargs)
-        logger.debug(f"prompt:{messages[1]} 开始请求gpt")
+        logger.info(f"prompt:{messages[1]} 开始请求gpt")
         llm_res = chat.generate([messages])
         assistant_content = llm_res.generations[0][0].text
         # 使用 Edge TTS 生成回复消息的语音文件
         logger.debug(f"开始生成TTS 文件")
         t0 = time.time()
+        logger.info(f'assistant_content:{assistant_content}')
         await tts_save(self.event.get_audio_txt(assistant_content), self.sound_path)
         logger.debug(f"tts请求耗时:{time.time()-t0}")
 

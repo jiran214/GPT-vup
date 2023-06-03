@@ -42,7 +42,7 @@ pip install -r .\requirements.txt
 - 启动该项目
 - 打开web或者桌面端抖音正在直播的直播间，数据开始抓取
 - src目录下运行：>>`python manager.py run douyin`
-### vup Studio软件安装及配置
+### Vtube Studio软件安装及配置
 - 在steam下载vup Studio软件
 - 教程：https://www.bilibili.com/video/BV1nV4y1X7yJ?t=426.7
 - 重点！！！
@@ -82,5 +82,6 @@ pip install -r .\requirements.txt
 - [ ] context plugin优化
 - [ ] 本地模型替换api请求
 ## Contact Me
+- 请先star本项目~~
 - **如果你遇到各种问题，请提issues，一般的问题不要加我，感谢理解！**
 - 欢迎加我WX：yuchen59384 交流！
