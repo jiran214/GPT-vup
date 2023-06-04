@@ -1,3 +1,10 @@
+import os
+import sys
+
+path = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, path)
+sys.path.insert(1, os.path.dirname(path))
+
 import fire
 
 from src import config
@@ -5,7 +12,6 @@ from src.core.main import start_thread
 from src.utils.init import initialize_action, initialize_openai
 from src.utils.log import worker_logger
 from src.utils.utils import NewEventLoop
-
 
 logger = worker_logger
 
@@ -83,14 +89,14 @@ if __name__ == '__main__':
     fire.Fire(Management)
 
     """测试"""
-    # >> python main test
+    # >> python manager.py test
     # Management().test_net()
 
     """启动程序"""
-    # >> python main run bilibili
+    # >> python manager.py run bilibili
     # Management().run('BiliBili')
     # Management().run('DouYin')
 
     """初始化"""
-    # >> python main action
+    # >> python manager.py action
     # Management().action()

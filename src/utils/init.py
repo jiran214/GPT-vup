@@ -53,7 +53,10 @@ async def initialize_action():
     except ImportError:
         raise 'Please run pip install pyvts'
     vts = pyvts.vts(plugin_info=plugin_info)
-    await vts.connect()
+    try:
+        await vts.connect()
+    except ConnectionRefusedError:
+        raise '请先打开VTS，并打开API开关！'
     print('请在live2D VTS弹窗中点击确认！')
     await vts.request_authenticate_token()  # get token
     await vts.write_token()
@@ -78,7 +81,7 @@ async def initialize_action():
         raise e
 
     # 写入
-    with open("./action.json", "w") as dump_f:
+    with open("../action.json", "w") as dump_f:
         json.dump(action_dict, dump_f)
 
     # 测试
