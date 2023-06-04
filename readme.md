@@ -43,7 +43,7 @@ pip install -r .\requirements.txt
 - 打开web或者桌面端抖音正在直播的直播间，数据开始抓取
 - src目录下运行：>>`python manager.py run douyin`
 ### Vtube Studio 安装及配置
-- 在steam下载vup Studio软件
+- 在steam下载Vtube Studio软件
 - 教程：https://www.bilibili.com/video/BV1nV4y1X7yJ?t=426.7
 - 重点！！！
   - 麦克风设置：你可以不用虚拟声道，win 默认输出设备为Speaker Realtek(R) Audio，在VTS里的麦克风设置，输入设备也设置为Realtek(R) Audio即可。
