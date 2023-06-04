@@ -6,6 +6,7 @@
  @SoftWare: PyCharm
 """
 import asyncio
+import os
 import threading
 import time
 from langchain.chat_models import ChatOpenAI
@@ -19,7 +20,7 @@ from src.db.mysql import get_session
 from src.modules.actions import play_action
 from src.modules.audio import tts_save, play_sound
 from src.utils.events import BlDanmuMsgEvent
-from src.utils.utils import worker_logger
+from src.utils.utils import worker_logger, sync_get_embedding
 from src.utils.utils import Event
 from src.utils.utils import audio_lock, NewEventLoop, top_n_indices_from_embeddings
 
@@ -28,7 +29,6 @@ logger = worker_logger
 base_path = './static/voice/{}.mp3'
 
 chat = ChatOpenAI(temperature=config.temperature, max_retries=2, max_tokens=150)
-embeddings = OpenAIEmbeddings()
 
 
 class VtuBer:
@@ -94,7 +94,7 @@ class VtuBer:
                 break
         if not embedding_str:
             raise '不应该不存在'
-        embedding = embeddings.embed_query(embedding_str)
+        embedding = sync_get_embedding([embedding_str])
         tasks = [asyncio.create_task(self.generate_chat(embedding))]
         if config.action_plugin and self.event.action:
             tasks.append(asyncio.create_task(self.generate_action(embedding)))
@@ -107,4 +107,7 @@ class VtuBer:
 
 
 if __name__ == '__main__':
+
+    res = embedding = sync_get_embedding(['embedding_str'])
+    print(res)
     logger.debug('123')

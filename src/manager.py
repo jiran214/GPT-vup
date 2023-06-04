@@ -18,7 +18,7 @@ logger = worker_logger
 
 class Management:
     def __init__(self):
-        initialize_openai()
+        assert os.environ['OPENAI_API_KEY']
 
     def action(self):
         loop = NewEventLoop()
@@ -52,8 +52,9 @@ class Management:
         if config.context_plugin:
             try:
                 from pymilvus import connections, has_collection, Collection
+                import cryptography
             except ImportError:
-                raise 'Please run pip install pymilvus==2.0'
+                raise 'Please run pip install pymilvus==2.0 cryptography'
 
             try:
                 connections.connect(
@@ -86,7 +87,7 @@ class Management:
 
 if __name__ == '__main__':
     """命令行启动，等同于下面的程序启动"""
-    fire.Fire(Management)
+    # fire.Fire(Management)
 
     """测试"""
     # >> python manager.py test
@@ -94,7 +95,7 @@ if __name__ == '__main__':
 
     """启动程序"""
     # >> python manager.py run bilibili
-    # Management().run('BiliBili')
+    Management().run('BiliBili')
     # Management().run('DouYin')
 
     """初始化"""
