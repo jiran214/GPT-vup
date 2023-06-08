@@ -13,12 +13,13 @@ from langchain.chat_models import ChatOpenAI
 from langchain.embeddings import OpenAIEmbeddings
 
 from src import config
-from src.config import live2D_embeddings
+from src.config import live2D_embeddings, keyword_str_list
 from src.db.milvus import VectorStore
 from src.db.models import TieBa
 from src.db.mysql import get_session
 from src.modules.actions import play_action
 from src.modules.audio import tts_save, play_sound
+from src.utils.dfa import DFA
 from src.utils.events import BlDanmuMsgEvent
 from src.utils.utils import worker_logger, sync_get_embedding, get_openai_key
 from src.utils.utils import Event
@@ -29,8 +30,9 @@ logger = worker_logger
 base_path = './static/voice/{}.mp3'
 
 
-
 class VtuBer:
+    dfa = DFA(keyword_str_list)
+
     def __init__(self, event: Event):
         self.event = event
         self.sound_path = base_path.format(int(time.time()))
@@ -52,10 +54,16 @@ class VtuBer:
                           openai_api_key=get_openai_key())
         llm_res = chat.generate([messages])
         assistant_content = llm_res.generations[0][0].text
+        logger.info(f'assistant_content:{assistant_content}')
+        # 违禁词判断
+        dfa_match_list = self.dfa.match(assistant_content)
+        forbidden_words = [forbidden_word['match'] for forbidden_word in dfa_match_list]
+        if dfa_match_list:
+            logger.warn(f'包含违禁词:{forbidden_words}，跳过本次语音生成')
+            return False
         # 使用 Edge TTS 生成回复消息的语音文件
         logger.debug(f"开始生成TTS 文件")
         t0 = time.time()
-        logger.info(f'assistant_content:{assistant_content}')
         await tts_save(self.event.get_audio_txt(assistant_content), self.sound_path)
         logger.debug(f"tts请求耗时:{time.time()-t0}")
 
@@ -99,8 +107,9 @@ class VtuBer:
         tasks = [asyncio.create_task(self.generate_chat(embedding))]
         if config.action_plugin and self.event.action:
             tasks.append(asyncio.create_task(self.generate_action(embedding)))
-        await asyncio.gather(*tasks)
-        await self.output()
+        state = await asyncio.gather(*tasks)
+        if state[0] is not False:
+            await self.output()
 
     def run(self):
         t_loop = NewEventLoop()

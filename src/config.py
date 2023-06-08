@@ -42,5 +42,9 @@ try:
 except Exception as e:
     print('读取embedding文件错误，请检查本地是否生成action.json 且动作不为空， 使用action plugin前请先运行 python manager.py action', e)
 
+
+with open(os.path.join(root_path, 'forbidden_words.txt'), mode='r', encoding='utf-8') as f:
+    keyword_str_list = [line.strip() for line in f.readlines()]
+
 if __name__ == '__main__':
     print(api_key, proxy)

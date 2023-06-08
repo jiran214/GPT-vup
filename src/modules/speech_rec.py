@@ -14,7 +14,7 @@ import speech_recognition as sr
 import keyboard
 
 from src.utils.events import UserEvent
-from src.utils.log import request_logger
+from src.utils.log import worker_logger
 from src.utils.utils import user_queue
 
 CHUNK = 1024
@@ -24,7 +24,7 @@ RATE = 16000
 RECORD_SECONDS = 5
 WAVE_OUTPUT_FILENAME = "../static/speech/{}.wav"
 
-logger = request_logger
+logger = worker_logger
 
 
 def speech_recognition_task():
