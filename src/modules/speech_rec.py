@@ -5,6 +5,7 @@
  @DateTime: 2023/5/13 18:21
  @SoftWare: PyCharm
 """
+import threading
 import time
 
 import wave
@@ -21,7 +22,7 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 16000
 RECORD_SECONDS = 5
-WAVE_OUTPUT_FILENAME = "./static/speech/{}.wav"
+WAVE_OUTPUT_FILENAME = "../static/speech/{}.wav"
 
 logger = request_logger
 
@@ -63,7 +64,7 @@ def speech_recognition_task():
             audio_data = r.record(source)
             logger.debug('正在请求语音转文字接口recognize_google...')
             text = r.recognize_google(audio_data, language='zh-CN')
-
+            print('识别到的文字:', text)
             ue = UserEvent(text, '{}')
             ue.is_high_priority = True
             # ue.action = live2D_actions.index('Anim Shake')
@@ -76,7 +77,10 @@ def speech_recognition_task():
 
 def speech_hotkey_listener():
     keyboard.add_hotkey('ctrl+t', speech_recognition_task)
+    keyboard.wait()
 
 
 if __name__ == '__main__':
-    speech_hotkey_listener()
+    t = threading.Thread(target=speech_hotkey_listener)
+    t.start()
+    # speech_hotkey_listener()

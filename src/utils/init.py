@@ -29,9 +29,6 @@ def initialize_openai():
     file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../config.ini')
     _config = configparser.RawConfigParser()
     _config.read(file_path)
-    api_key = _config.get('openai', 'api_key')
-    os.environ['OPENAI_API_KEY'] = api_key
-
     proxy = _config.get('other', 'proxy')
     if proxy:
         os.environ["http_proxy"] = f'http://{proxy}/'

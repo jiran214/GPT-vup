@@ -13,10 +13,11 @@ import os
 import colorlog
 
 from src import config
+from src.config import root_path
 
 
 class Logging:
-    def __init__(self, log_file_name, log_file_path="./logs"):
+    def __init__(self, log_file_name, log_file_path=os.path.join(root_path, 'logs')):
         """
         :param log_file_path:
                                     1、print(os.getcwd()) # 获取当前工作目录路径

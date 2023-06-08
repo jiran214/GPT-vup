@@ -9,15 +9,15 @@ import configparser
 import json
 import os.path
 
-
-file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config.ini')
+root_path = os.path.abspath(os.path.dirname(__file__))
+file_path = os.path.join(root_path, 'config.ini')
 
 _config = configparser.RawConfigParser()
 _config.read(file_path)
 
 tss_settings = dict(_config.items('edge-tss'))
 
-api_key = _config.get('openai', 'api_key')
+api_key_list = [value for key, value in _config.items('openai') if key.startswith('api') and value]
 temperature = _config.get('openai', 'temperature')
 room_id = _config.getint('room', 'id')
 mysql = dict(_config.items('mysql'))

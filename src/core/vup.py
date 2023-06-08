@@ -20,7 +20,7 @@ from src.db.mysql import get_session
 from src.modules.actions import play_action
 from src.modules.audio import tts_save, play_sound
 from src.utils.events import BlDanmuMsgEvent
-from src.utils.utils import worker_logger, sync_get_embedding
+from src.utils.utils import worker_logger, sync_get_embedding, get_openai_key
 from src.utils.utils import Event
 from src.utils.utils import audio_lock, NewEventLoop, top_n_indices_from_embeddings
 
@@ -28,7 +28,6 @@ logger = worker_logger
 
 base_path = './static/voice/{}.mp3'
 
-chat = ChatOpenAI(temperature=config.temperature, max_retries=2, max_tokens=150)
 
 
 class VtuBer:
@@ -49,6 +48,8 @@ class VtuBer:
         # 请求GPT
         messages = self.event.get_prompt_messages(**extra_kwargs)
         logger.info(f"prompt:{messages[1]} 开始请求gpt")
+        chat = ChatOpenAI(temperature=config.temperature, max_retries=2, max_tokens=150,
+                          openai_api_key=get_openai_key())
         llm_res = chat.generate([messages])
         assistant_content = llm_res.generations[0][0].text
         # 使用 Edge TTS 生成回复消息的语音文件

@@ -5,6 +5,7 @@
  @DateTime: 2023/4/22 21:23
  @SoftWare: PyCharm
 """
+from bilibili_api import sync
 
 from src import config
 from src.utils.events import BlDanmuMsgEvent, BlSendGiftEvent, BlSuperChatMessageEvent, BlInteractWordEvent
@@ -21,7 +22,7 @@ class BlLiveRoom:
         try:
             from bilibili_api import live, sync
         except ImportError:
-            raise 'Please run pip install bilibili_api --no-deps'
+            raise 'Please run pip install bilibili-api-python'
         self.room = live.LiveDanmaku(bl_room_id)
         self.add_event_listeners()
 

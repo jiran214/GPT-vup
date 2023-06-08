@@ -7,6 +7,7 @@
 """
 import asyncio
 import queue
+import random
 
 from threading import Lock
 from dataclasses import dataclass
@@ -17,6 +18,7 @@ import numpy as np
 import openai
 from scipy import spatial
 
+from src import config
 from src.utils.base import Event
 from src.utils.log import worker_logger
 
@@ -126,9 +128,13 @@ def top_n_indices_from_embeddings(
 
 
 def sync_get_embedding(texts: List[str], model="text-embedding-ada-002"):
-    res = openai.Embedding.create(input=texts, model=model)
+    res = openai.Embedding.create(input=texts, model=model, api_key=get_openai_key())
     if isinstance(texts, list) and len(texts) == 1:
         return res['data'][0]['embedding']
     else:
         return [d['embedding'] for d in res['data']]
 
+
+def get_openai_key():
+    # todo apikey调度
+    return random.choice(config.api_key_list)

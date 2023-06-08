@@ -1,9 +1,4 @@
 import os
-import sys
-
-path = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, path)
-sys.path.insert(1, os.path.dirname(path))
 
 import fire
 
@@ -11,14 +6,17 @@ from src import config
 from src.core.main import start_thread
 from src.utils.init import initialize_action, initialize_openai
 from src.utils.log import worker_logger
-from src.utils.utils import NewEventLoop
+from src.utils.utils import NewEventLoop, get_openai_key
 
 logger = worker_logger
 
 
 class Management:
     def __init__(self):
-        assert os.environ['OPENAI_API_KEY']
+        try:
+            assert config.api_key_list
+        except:
+            raise '请填写openai -> api_key！'
 
     def action(self):
         loop = NewEventLoop()
@@ -43,7 +41,7 @@ class Management:
         })
         assert r.status_code == 200
         # 测试openai库
-        llm = OpenAI(temperature=0.9)
+        llm = OpenAI(temperature=config.temperature, openai_api_key=get_openai_key(), verbose=config.debug)
         text = "python是世界上最好的语言 "
         print(llm(text))
         print('测试成功！')
