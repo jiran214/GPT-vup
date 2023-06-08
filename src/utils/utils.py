@@ -8,6 +8,8 @@
 import asyncio
 import queue
 import random
+import time
+from collections import deque
 
 from threading import Lock
 from dataclasses import dataclass
@@ -106,6 +108,29 @@ class UserQueue:
 user_queue = UserQueue()
 
 
+class FixedLengthTSDeque:
+
+    def __init__(self, per_minute_times):
+        self._per_minute_times = per_minute_times
+        self._data_deque = deque(maxlen=per_minute_times)
+
+    def _append(self) -> None:
+        self._data_deque.append(int(time.time()))
+
+    def can_append(self):
+        if len(self._data_deque) < self._per_minute_times or int(time.time()) - self._data_deque[0] > 60:
+            return True
+        return False
+
+    def acquire(self):
+        if not self.can_append():
+            logger.warning('当前api_key调用频率超过3次/min,建议在config -> openai添加api_key')
+            return False
+        else:
+            self._append()
+            return True
+
+
 def top_n_indices_from_embeddings(
         query_embedding: List[float],
         embeddings: List[List[float]],
@@ -135,6 +160,24 @@ def sync_get_embedding(texts: List[str], model="text-embedding-ada-002"):
         return [d['embedding'] for d in res['data']]
 
 
+api_key_limit_dict = dict(zip(config.api_key_list, [FixedLengthTSDeque(3) for _ in config.api_key_list]))
+current_api_key = config.api_key_list[0]
+
+
 def get_openai_key():
-    # todo apikey调度
-    return random.choice(config.api_key_list)
+    global current_api_key
+    times = 0
+    while 1:
+        times = times + 1
+        if api_key_limit_dict[current_api_key].acquire():
+            return current_api_key
+        else:
+            current_api_key = config.api_key_list[(config.api_key_list.index(current_api_key)+1) % len(config.api_key_list)]
+            # print('switch', current_api_key)
+        if times > len(config.api_key_list):
+            time.sleep(5)
+
+
+if __name__ == '__main__':
+    while 1:
+        print(get_openai_key())

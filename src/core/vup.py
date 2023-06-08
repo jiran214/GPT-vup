@@ -59,7 +59,7 @@ class VtuBer:
         dfa_match_list = self.dfa.match(assistant_content)
         forbidden_words = [forbidden_word['match'] for forbidden_word in dfa_match_list]
         if dfa_match_list:
-            logger.warn(f'包含违禁词:{forbidden_words}，跳过本次语音生成')
+            logger.warning(f'包含违禁词:{forbidden_words}，跳过本次语音生成')
             return False
         # 使用 Edge TTS 生成回复消息的语音文件
         logger.debug(f"开始生成TTS 文件")
