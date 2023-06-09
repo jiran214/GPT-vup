@@ -1,7 +1,7 @@
 import fire
 
 from src.db.models import *
-from src.db.mysql import Base, engine
+from src.db.dao import Base, engine
 from src.scripts.crawlers.tie_ba_spider import Ba
 from src.scripts.workers import EmbeddingWorker
 

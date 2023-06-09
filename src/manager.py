@@ -52,7 +52,7 @@ class Management:
                 from pymilvus import connections, has_collection, Collection
                 import cryptography
             except ImportError:
-                raise 'Please run pip install pymilvus==2.0 cryptography'
+                raise 'Please run pip install pymilvus==2.0 cryptography parsel'
 
             try:
                 connections.connect(

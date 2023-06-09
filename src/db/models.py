@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Boolean, Integer
 
-from src.db.mysql import Base, engine, get_session
+from src.db.dao import Base, engine, get_session
 
 
 # class Document(Base):
@@ -24,10 +24,10 @@ class TieBa(Base):
 
 
 if __name__ == '__main__':
-    # Base.metadata.create_all(engine)
+    Base.metadata.create_all(engine)
     # print('over')
 
-    with get_session() as s:
-        r_list = s.query(TieBa).limit(3).all()
-        for r in r_list:
-            print(r.content)
+    # with get_session() as s:
+    #     r_list = s.query(TieBa).limit(3).all()
+    #     for r in r_list:
+    #         print(r.content)

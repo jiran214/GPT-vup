@@ -1,7 +1,7 @@
 from pymilvus import FieldSchema, Collection, CollectionSchema, DataType, has_collection
 
 from src import config
-from src.db.mysql import get_session
+from src.db.dao import get_session
 from src.db.models import TieBa
 from src.utils.init import initialize_openai
 from src.utils.utils import sync_get_embedding

@@ -16,7 +16,7 @@ from src import config
 from src.config import live2D_embeddings, keyword_str_list
 from src.db.milvus import VectorStore
 from src.db.models import TieBa
-from src.db.mysql import get_session
+from src.db.dao import get_session
 from src.modules.actions import play_action
 from src.modules.audio import tts_save, play_sound
 from src.utils.dfa import DFA

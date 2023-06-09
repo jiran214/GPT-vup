@@ -7,7 +7,7 @@ except ImportError:
     raise 'Please run pip install parsel pymysql cryptography'
 
 
-from src.db.mysql import get_session
+from src.db.dao import get_session
 from src.db.models import TieBa
 
 pymysql.install_as_MySQLdb()

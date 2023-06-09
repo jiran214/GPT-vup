@@ -8,6 +8,7 @@ __pycache__/
 *.bak
 *.cache
 *.dat
+*.db
 *.log
 *.patch
 *.orig.*

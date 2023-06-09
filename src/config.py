@@ -21,6 +21,7 @@ api_key_list = [value for key, value in _config.items('openai') if key.startswit
 temperature = _config.get('openai', 'temperature')
 room_id = _config.getint('room', 'id')
 mysql = dict(_config.items('mysql'))
+sqlite = dict(_config.items('sqlite'))
 milvus = dict(_config.items('milvus'))
 debug = _config.getboolean('other', 'debug')
 proxy = _config.get('other', 'proxy')
