@@ -85,4 +85,4 @@ pip install -r .\requirements.txt
 - 请先star本项目~~
 - **如果你遇到各种问题，请提issues，一般的问题不要加我，感谢理解！**
 - 欢迎加我WX：yuchen59384 交流！
-- ![](https://github.com/jiran214/GPT-vup/blob/2.0/public/mm_reward_qrcode_1686025672796.png 400x300)
+- ![](https://github.com/jiran214/GPT-vup/blob/2.0/public/mm_reward_qrcode_1686025672796.png){:height="400px" width="300px"}
