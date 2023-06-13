@@ -33,6 +33,9 @@ class BlLiveRoom:
             'SEND_GIFT': on_gift_event_filter,
             'INTERACT_WORD': on_interact_word_event_filter,
         }
+        # 取消用户不需要的事件监听
+        for event_name in config.bili_room_event_config_dict:
+            listener_map.pop(event_name)
         for item in listener_map.items():
             self.room.add_event_listener(*item)
 

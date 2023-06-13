@@ -1,0 +1,38 @@
+{
+  "DANMU_MSG": {
+    "alias": "弹幕",
+    "switch": true,
+    "audio_txt_mode": "ChatGPT-3.5",
+    "action": {
+      "mode": "GPT返回动作词",
+      "name": null
+    }
+  },
+  "SUPER_CHAT_MESSAGE": {
+    "alias": "super chat",
+    "switch": true,
+    "audio_txt_mode": "ChatGPT-3.5",
+    "action": {
+      "mode": "GPT返回动作词",
+      "name": null
+    }
+  },
+  "SEND_GIFT": {
+    "alias": "礼物",
+    "switch": true,
+    "audio_txt_mode": "直接生成语音",
+    "action": {
+      "mode": "指定动作",
+      "name": null
+    }
+  },
+  "INTERACT_WORD": {
+    "alias": "进入直播间",
+    "switch": true,
+    "audio_txt_mode": "直接生成语音",
+    "action": {
+      "mode": "指定动作",
+      "name": null
+    }
+  }
+}

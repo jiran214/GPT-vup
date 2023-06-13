@@ -1,0 +1,47 @@
+{
+  "1": {
+    "alias": "弹幕",
+    "switch": true,
+    "audio_txt_mode": "ChatGPT-3.5",
+    "action": {
+      "mode": "GPT返回动作词",
+      "name": null
+    }
+  },
+  "2": {
+    "alias": "用户点赞",
+    "switch": true,
+    "audio_txt_mode": "直接生成语音",
+    "action": {
+      "mode": "指定动作",
+      "name": null
+    }
+  },
+  "3": {
+    "alias": "进入直播间",
+    "switch": true,
+    "audio_txt_mode": "直接生成语音",
+    "action": {
+      "mode": "指定动作",
+      "name": null
+    }
+  },
+  "4": {
+    "alias": "关注",
+    "switch": true,
+    "audio_txt_mode": "直接生成语音",
+    "action": {
+      "mode": "指定动作",
+      "name": null
+    }
+  },
+  "5": {
+    "alias": "礼物",
+    "switch": true,
+    "audio_txt_mode": "直接生成语音",
+    "action": {
+      "mode": "指定动作",
+      "name": null
+    }
+  }
+}

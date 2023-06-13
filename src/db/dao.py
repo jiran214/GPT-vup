@@ -16,13 +16,13 @@ engine = create_engine(
     # max_overflow=int(config.SQLALCHEMY_POOL_MAX_SIZE),  # 连接池最大的大小
     # pool_recycle=int(config.SQLALCHEMY_POOL_RECYCLE),  # 多久时间回收连接
 )
-Session = sessionmaker(bind=engine)
+session = sessionmaker(bind=engine)
 Base = declarative_base(engine)
 
 
 @contextlib.contextmanager
-def get_session():
-    s = Session()
+def get_session() -> Session:
+    s = session()
     try:
         yield s
         s.commit()

@@ -23,6 +23,14 @@ class TieBa(Base):
         return f'{self.hash_id} self.{self.content}'
 
 
+class Corpus(Base):
+    __tablename__ = "corpus"
+    id = Column(Integer, primary_key=True)
+    # 空格分隔的关键词
+    keywords = Column(String(500), nullable=False)
+    audio_txt = Column(Integer, nullable=False)
+
+
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
     # print('over')

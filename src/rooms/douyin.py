@@ -10,7 +10,7 @@ import aiohttp
 
 import json
 
-
+from src import config
 from src.utils.events import DyDanmuMsgEvent, DyAttentionEvent, DySendGiftEvent, DyCkEvent, DyWelcomeWordEvent
 from src.utils.utils import user_queue
 
@@ -58,15 +58,18 @@ async def dy_connect():
             # 处理websocket 消息
             if message.type == aiohttp.WSMsgType.TEXT:
                 data = json.loads(message.data)
-                event_name = data.get("Type")  # 标签类型
+                event_name = str(data.get("Type"))  # 标签类型
                 filter_map = {
-                    1: msg,  # 1用户发言
-                    2: ck,  # 2用户点赞
-                    3: welcome,  # 3用户入房
-                    4: attention,  # 用户关注
-                    5: Gift,  # 5用户礼物
+                    "1": msg,  # 1用户发言
+                    "2": ck,  # 2用户点赞
+                    "3": welcome,  # 3用户入房
+                    "4": attention,  # 用户关注
+                    "5": Gift,  # 5用户礼物
                     # 6: check,  # 6人数统计
                 }
+                # 取消用户不需要的事件监听
+                for event_name in config.dy_room_event_config_dict:
+                    filter_map.pop(event_name)
                 if event_name in filter_map:
                     filter_map[event_name](data)
 

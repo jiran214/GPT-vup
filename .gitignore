@@ -9,6 +9,7 @@ __pycache__/
 *.cache
 *.dat
 *.db
+*.pdf
 *.log
 *.patch
 *.orig.*
@@ -19,4 +20,4 @@ __pycache__/
 *.wav
 
 env/
-config.ini
+Qdrant/

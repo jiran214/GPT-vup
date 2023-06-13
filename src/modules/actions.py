@@ -14,7 +14,7 @@ plugin_info = {
 }
 
 
-async def play_action(action_index):
+async def play_action(action_name: str):
     try:
         import pyvts
     except ImportError:
@@ -24,9 +24,9 @@ async def play_action(action_index):
     await vts.read_token()
     await vts.request_authenticate()  # use token
 
-    if action_index > len(live2D_actions) - 1:
-        raise '动作不存在'
-    send_hotkey_request = vts.vts_request.requestTriggerHotKey(live2D_actions[action_index])
+    if action_name not in live2D_actions:
+        raise ValueError(f'动作不存在：{action_name}')
+    send_hotkey_request = vts.vts_request.requestTriggerHotKey(action_name)
     await vts.request(send_hotkey_request)
     await vts.close()
 

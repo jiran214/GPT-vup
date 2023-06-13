@@ -1,0 +1,20 @@
+{
+  "schedule_name1": {
+    "switch": true,
+    "timing": null,
+    "frequency": "20",
+    "audio_txt": "",
+    "action": {
+      "name": null
+    }
+  },
+  "schedule_name2": {
+    "switch": true,
+    "timing": "14:14",
+    "frequency": null,
+    "audio_txt": "",
+    "action": {
+    "name": null
+    }
+  }
+}

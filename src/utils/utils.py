@@ -6,8 +6,10 @@
  @SoftWare: PyCharm
 """
 import asyncio
+import os.path
 import queue
 import random
+import re
 import time
 from collections import deque
 
@@ -18,14 +20,22 @@ from typing import List, Union, Dict
 
 import numpy as np
 import openai
+from cacheout import Cache
+from decorator import decorator
 from scipy import spatial
 
 from src import config
+from src.config import root_path
 from src.utils.base import Event
+from src.utils.events import BlSuperChatMessageEvent, BlDanmuMsgEvent, ScheduleEvent
 from src.utils.log import worker_logger
 
 logger = worker_logger
 audio_lock = Lock()
+
+
+def root(*args):
+    return os.path.join(root_path, *args)
 
 
 class NewEventLoop:
@@ -34,7 +44,7 @@ class NewEventLoop:
         asyncio.set_event_loop(self.loop)
 
     def run(self, coroutine):
-        self.loop.run_until_complete(coroutine)
+        return self.loop.run_until_complete(coroutine)
 
 
 @dataclass
@@ -172,10 +182,53 @@ def get_openai_key():
         if api_key_limit_dict[current_api_key].acquire():
             return current_api_key
         else:
-            current_api_key = config.api_key_list[(config.api_key_list.index(current_api_key)+1) % len(config.api_key_list)]
+            current_api_key = config.api_key_list[
+                (config.api_key_list.index(current_api_key) + 1) % len(config.api_key_list)]
             # print('switch', current_api_key)
         if times > len(config.api_key_list):
             time.sleep(5)
+
+
+def is_user_input(event: Event):
+    return isinstance(event, BlDanmuMsgEvent) or isinstance(event, BlSuperChatMessageEvent)
+
+
+def validate_string(input_string):
+    pattern = r'^[\u4E00-\u9FA5A-Za-z\s]+$'
+    # \u4E00-\u9FA5 是中文的 Unicode 范围，A-Za-z 是英文字母的范围，\s 匹配空格
+    return bool(re.match(pattern, input_string))
+
+
+@decorator
+def time_record(func, record_logger, *args, **kw):
+    record_logger.debug(f'func:{func.__name__}开始运行')
+    t0 = time.time()
+    func(*args, **kw)
+    record_logger.debug(f"func:{func.__name__}运行成功-耗时:{time.time() - t0}")
+
+
+cache = Cache()
+
+
+class VupCache:
+    def __init__(self, key):
+        self.key = key
+
+    @classmethod
+    def can_cache(cls, event: Event):
+        if is_user_input(event):
+            text = event.prompt_kwargs.get('text')
+            if len(text) <= 4:
+                key = text
+                return cls(key)
+        return None
+
+    def set_vup(self, value):
+        cache.set(key=self.key, value=value)
+
+    @staticmethod
+    def get_vup(self):
+        return cache.get(key=self.key)
 
 
 if __name__ == '__main__':

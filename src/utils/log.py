@@ -84,7 +84,8 @@ class Logging:
 
 
 # request_logger = Logging("Request").get_logger()
-worker_logger = Logging("Worker").get_logger()
+worker_logger = Logging("worker").get_logger()
+vup_logger = Logging("vup").get_logger()
 
 
 if __name__ == '__main__':

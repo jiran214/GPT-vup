@@ -1,4 +1,3 @@
-import os
 import copy
 
 from src.config import keyword_str_list

@@ -12,21 +12,21 @@ from typing import Union
 import time
 
 from src import config
-from src.config import live2D_actions
-from src.utils.prompt_temple import get_chat_prompt_template
+from src.utils.enums import TxtMode, ActionMode
 
 
 class Event:
     def __init__(self, event_dict):
         self._event_dict = event_dict
-        self._event_name = event_dict.get('type', '') or event_dict.get('Type', '')
-        if not self._event_name:
-            raise
+        self.event_name = str(event_dict.get('type', '')) or str(event_dict.get('Type', ''))
+        if not self.event_name:
+            raise ValueError(f'不存在事件:{event_dict}')
 
-        self._kwargs = self.get_kwargs()
-        self._action = None
-        # 是否优先处理
+        self._kwargs = self.get_kwargs()        # 是否优先处理
         self.is_high_priority = False
+
+        self.action_mode = ActionMode(config.event_config_dict[self.event_name]['action']['mode'])
+        self.action_name = config.event_config_dict[self.event_name]['action']['name']
 
     @abstractmethod
     def get_kwargs(self):
@@ -49,14 +49,6 @@ class Event:
         """每类event对应的模板"""
         return '{text}'
 
-    def get_prompt_messages(self, **kwargs):
-        """出口函数，生成prompt，给到llm调用"""
-        if config.context_plugin and 'context' in kwargs:
-            human_template = '上下文:{context}\n问题:' + self.human_template
-        else:
-            human_template = self.human_template
-        return get_chat_prompt_template(human_template).format_prompt(**self.prompt_kwargs, **kwargs).to_messages()
-
     @abstractmethod
     def get_audio_txt(self, *args, **kwargs):
         """数字人说的话"""
@@ -73,12 +65,8 @@ class Event:
         :return:
             None: 该event不做任何动作
             str: zero-shot 匹配动作
-            int: 通过索引固定 做某个动作
         """
-        return self._action
+        return self._action_name
 
-    @action.setter
-    def action(self, value: Union[None, str, int]):
-        if value in live2D_actions:
-            self._action = live2D_actions.index(value)
-        self._action = value
+    def __repr__(self):
+        return f'event-{self.event_name}-{self._kwargs}'

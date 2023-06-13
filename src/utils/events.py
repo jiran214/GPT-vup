@@ -7,14 +7,13 @@
 """
 import time
 
-from src.utils.utils import Event
+from src.utils.base import Event
 
 
 class BlDanmuMsgEvent(Event):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.action = self._kwargs['content']
 
     def get_kwargs(self):
         return {
@@ -42,7 +41,6 @@ class BlSuperChatMessageEvent(Event):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.is_high_priority = True
-        self.action = self._kwargs['message']
 
     def get_kwargs(self):
         info = self._event_dict['data']['data']
@@ -58,12 +56,12 @@ class BlSuperChatMessageEvent(Event):
     @property
     def prompt_kwargs(self):
         return {
-            'message': self._kwargs['message']
+            'text': self._kwargs['message']
         }
 
     @property
     def human_template(self):
-        return '{message}'
+        return '{text}'
 
     def get_audio_txt(self, gpt_resp):
         return f"感谢{self._kwargs['user_name']}的sc。{self._kwargs['message']} {gpt_resp}"
@@ -95,8 +93,14 @@ class BlSendGiftEvent(Event):
             "请表示感谢，说一句赞美他的话！"
         )
 
-    def get_audio_txt(self, gpt_resp):
+    def _get_audio_txt(self, gpt_resp):
         return f"{self.prompt_kwargs['content']} {gpt_resp}"
+
+    def get_audio_txt(self, *args):
+        if args:
+            self._get_audio_txt( *args)
+        else:
+            return f"感谢 {self.prompt_kwargs['content']}"
 
 
 class BlInteractWordEvent(Event):
@@ -129,8 +133,14 @@ class BlInteractWordEvent(Event):
             "请表示欢迎！并简短聊聊他加入的粉丝团{medal_name}"
         )
 
-    def get_audio_txt(self, gpt_resp):
+    def _get_audio_txt(self, gpt_resp):
         return f"{gpt_resp}"
+
+    def get_audio_txt(self, *args):
+        if args:
+            self._get_audio_txt( *args)
+        else:
+            return f"欢迎 {self.prompt_kwargs['content']}"
 
 
 class DyDanmuMsgEvent(BlDanmuMsgEvent):
@@ -165,8 +175,14 @@ class DyCkEvent(Event):
                 "请表示感谢！"
         )
 
-    def get_audio_txt(self, gpt_resp):
+    def _get_audio_txt(self, gpt_resp):
         return f"{gpt_resp}"
+
+    def get_audio_txt(self, *args):
+        if args:
+            self._get_audio_txt(*args)
+        else:
+            return f"感谢 {self.prompt_kwargs['content']}的赞"
 
 
 class DyWelcomeWordEvent(Event):
@@ -190,8 +206,14 @@ class DyWelcomeWordEvent(Event):
             "请表示欢迎！并简短聊聊他的名字"
         )
 
-    def get_audio_txt(self, gpt_resp):
+    def _get_audio_txt(self, gpt_resp):
         return f"{gpt_resp}"
+
+    def get_audio_txt(self, *args):
+        if args:
+            self._get_audio_txt(*args)
+        else:
+            return f"欢迎 {self.prompt_kwargs['user_name']}进入直播间"
 
 
 class DySendGiftEvent(Event):
@@ -221,8 +243,14 @@ class DySendGiftEvent(Event):
             "请表示感谢，说一句赞美他的话！"
         )
 
-    def get_audio_txt(self, gpt_resp):
+    def _get_audio_txt(self, gpt_resp):
         return f"{self._kwargs['user_name']} 送出{self._kwargs['giftName']}!{gpt_resp}"
+
+    def get_audio_txt(self, *args):
+        if args:
+            self._get_audio_txt(*args)
+        else:
+            return f"感谢 {self._kwargs['user_name']}老板 送出的{self._kwargs['giftName']}!"
 
 
 class DyAttentionEvent(Event):
@@ -247,8 +275,23 @@ class DyAttentionEvent(Event):
             "请表示感谢，说一句赞美他的话！"
         )
 
-    def get_audio_txt(self, gpt_resp):
+    def _get_audio_txt(self, gpt_resp):
         return gpt_resp
+
+    def get_audio_txt(self, *args):
+        if args:
+            self._get_audio_txt(*args)
+        else:
+            return f"感谢 {self._kwargs['user_name']}的关注!"
+
+
+class ScheduleEvent:
+
+    def __init__(self, vup):
+        self.vup = vup
+
+    def __str__(self):
+        return f'event-schedule-{self.vup}'
 
 
 class UserEvent(Event):
@@ -275,4 +318,5 @@ class UserEvent(Event):
 
     def get_audio_txt(self, gpt_resp):
         return self.audio_txt_temple.format(gpt_resp)
+
 

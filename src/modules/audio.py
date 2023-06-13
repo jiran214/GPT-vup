@@ -5,6 +5,7 @@
  @DateTime: 2023/4/24 14:16
  @SoftWare: PyCharm
 """
+import asyncio
 
 import edge_tts
 from src import config
@@ -27,6 +28,7 @@ def play_sound(file_path):
     with audio_lock:
         # 播放生成的语音文件
         mixer.init()
+        print('file_path', file_path)
         mixer.music.load(file_path)
         mixer.music.play()
         while mixer.music.get_busy():
@@ -34,3 +36,8 @@ def play_sound(file_path):
 
         mixer.music.stop()
         mixer.quit()
+
+
+if __name__ == '__main__':
+    asyncio.run(tts_save('你真是个臭傻*，哈哈哈哔哔哔哈哈哈', './1111.mp3'))
+    play_sound('1111.mp3')
