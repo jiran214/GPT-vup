@@ -1,13 +1,19 @@
 import os
+import sys
+
+path = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, path)
+sys.path.insert(1, os.path.dirname(path))
 
 import fire
-
 from src import config
 from src.core.main import start_thread
 from src.utils.init import initialize_action, initialize_openai
 from src.utils.log import worker_logger
 from src.utils.utils import NewEventLoop, get_openai_key
+from src.utils.init import initialize_openai
 
+initialize_openai()
 logger = worker_logger
 
 
@@ -85,7 +91,7 @@ class Management:
 
 if __name__ == '__main__':
     """命令行启动，等同于下面的程序启动"""
-    # fire.Fire(Management)
+    fire.Fire(Management)
 
     """测试"""
     # >> python manager.py test
@@ -93,7 +99,7 @@ if __name__ == '__main__':
 
     """启动程序"""
     # >> python manager.py run bilibili
-    Management().run('BiliBili')
+    # Management().run('BiliBili')
     # Management().run('DouYin')
 
     """初始化"""
