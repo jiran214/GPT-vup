@@ -6,11 +6,9 @@
  @SoftWare: PyCharm
 """
 import asyncio
-import os
 import threading
 import time
 from langchain.chat_models import ChatOpenAI
-from langchain.embeddings import OpenAIEmbeddings
 
 from src import config
 from src.config import live2D_embeddings, keyword_str_list

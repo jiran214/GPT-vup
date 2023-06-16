@@ -23,11 +23,3 @@ class TieBa(Base):
         return f'{self.hash_id} self.{self.content}'
 
 
-if __name__ == '__main__':
-    Base.metadata.create_all(engine)
-    # print('over')
-
-    # with get_session() as s:
-    #     r_list = s.query(TieBa).limit(3).all()
-    #     for r in r_list:
-    #         print(r.content)
