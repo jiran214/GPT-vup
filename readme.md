@@ -13,6 +13,7 @@
   - action：根据观众的行为匹配对应人物动作
   - schedule：隔一段时间触发某一事件，讲故事、唱rap...
   - context：给问题补充上下文
+  
 ## 安装
 ### 环境
 - win 10
@@ -24,7 +25,7 @@ git clone https://github.com/jiran214/GPT-vup.git
 cd src
 # 建议命令行或者pycharm创建虚拟环境并激活 https://blog.csdn.net/xp178171640/article/details/115950985
 python -m pip install --upgrade pip pip
-pip install -r .\requirements.txt
+pip install -r requirements.txt
 ```
 ### 新建config.ini 
 - 重命名config.sample.ini为config.ini
@@ -77,14 +78,7 @@ pip install -r .\requirements.txt
 ## 更新日志
 - V2.0 支持context plugin，目录重构、更简单的readme，解决依赖混乱的问题
 - V1.0 [旧版本内容](https://github.com/jiran214/GPT-vup/tree/1.0)
-## to do list
-- [ ] speech plugin 阻塞问题
-- [ ] context plugin优化
-- [ ] 本地模型替换api请求
 ## Contact Me
-- 请先star本项目~~
-- **如果你遇到各种问题，请提issues，一般的问题不要加我，感谢理解！**
-- 欢迎加我WX：yuchen59384 交流！
 <div align=center>
   <img src="https://github.com/jiran214/GPT-vup/blob/2.0/public/mm_reward_qrcode_1686025672796.png" width="300" height="400"/><br/>
 </div>

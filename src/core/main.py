@@ -19,6 +19,8 @@ from src.rooms.douyin import dy_connect
 
 from src.utils.utils import user_queue, NewEventLoop
 from src.core.vup import VtuBer
+from bilibili_api import sync
+
 
 logger = worker_logger
 
@@ -26,8 +28,7 @@ logger = worker_logger
 # Define the producer function
 def bl_producer():
     r = BlLiveRoom()
-    t_loop = NewEventLoop()
-    t_loop.run(r.connect())
+    r.connect()
 
 
 def dy_producer():
@@ -109,5 +110,12 @@ def start_thread(worker_name):
 
     thread = threading.Thread(target=worker_map[worker_name])
     thread.start()
+    return thread
 
 
+if __name__ == '__main__':
+    # bl_producer()
+    t = start_thread('bl_producer')
+    start_thread('consumer')
+    t.join()
+    # time.sleep(10000)

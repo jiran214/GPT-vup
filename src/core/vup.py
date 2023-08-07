@@ -9,6 +9,7 @@ import asyncio
 import threading
 import time
 from langchain.chat_models import ChatOpenAI
+from bilibili_api import sync
 
 from src import config
 from src.config import live2D_embeddings, keyword_str_list
@@ -110,12 +111,13 @@ class VtuBer:
             await self.output()
 
     def run(self):
-        t_loop = NewEventLoop()
-        t_loop.run(self._run())
+        # t_loop = NewEventLoop()
+        # t_loop.run(self._run())
+        sync(self._run())
+
 
 
 if __name__ == '__main__':
-
     res = embedding = sync_get_embedding(['embedding_str'])
     print(res)
     logger.debug('123')

@@ -30,8 +30,9 @@ audio_lock = Lock()
 
 class NewEventLoop:
     def __init__(self):
-        self.loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self.loop)
+        # self.loop = asyncio.new_event_loop()
+        # asyncio.set_event_loop(self.loop)
+        self.loop = asyncio.get_event_loop()
 
     def run(self, coroutine):
         self.loop.run_until_complete(coroutine)
@@ -118,7 +119,7 @@ class FixedLengthTSDeque:
         self._data_deque.append(int(time.time()))
 
     def can_append(self):
-        if len(self._data_deque) < self._per_minute_times or int(time.time()) - self._data_deque[0] > 60:
+        if len(self._data_deque) < self._per_minute_times or (int(time.time()) - self._data_deque[0]) < 60:
             return True
         return False
 
@@ -175,9 +176,12 @@ def get_openai_key():
             current_api_key = config.api_key_list[(config.api_key_list.index(current_api_key)+1) % len(config.api_key_list)]
             # print('switch', current_api_key)
         if times > len(config.api_key_list):
+            logger.debug('限流等待中...')
             time.sleep(5)
 
 
 if __name__ == '__main__':
     while 1:
+        print('123')
         print(get_openai_key())
+        time.sleep(1)

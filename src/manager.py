@@ -13,6 +13,7 @@ from src.utils.log import worker_logger
 from src.utils.utils import NewEventLoop, get_openai_key
 from src.utils.init import initialize_openai
 
+
 initialize_openai()
 logger = worker_logger
 
@@ -29,13 +30,16 @@ class Management:
         loop.run(initialize_action())
 
     def run(self, name):
+        tasks = []
         self.test_plugin_dependency()
         if name.lower() == 'douyin':
-            start_thread('dy_producer')
+            tasks.append(start_thread('dy_producer'))
         elif name.lower() == 'bilibili':
-            start_thread('bl_producer')
-        start_thread('user_producer')
-        start_thread('consumer')
+            tasks.append(start_thread('bl_producer'))
+        tasks.append(start_thread('user_producer'))
+        tasks.append(start_thread('consumer'))
+        for task in tasks:
+            task.join()
 
     def test_net(self):
         from langchain import OpenAI

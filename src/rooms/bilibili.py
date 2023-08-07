@@ -5,6 +5,8 @@
  @DateTime: 2023/4/22 21:23
  @SoftWare: PyCharm
 """
+import asyncio
+
 from bilibili_api import sync
 
 from src import config
@@ -37,7 +39,9 @@ class BlLiveRoom:
             self.room.add_event_listener(*item)
 
     def connect(self):
-        return self.room.connect()
+        # loop = asyncio.get_event_loop()
+        # loop.run_until_complete(self.room.connect())
+        sync(self.room.connect())
 
 
 async def on_danmaku_event_filter(event_dict):
@@ -104,4 +108,4 @@ async def on_interact_word_event_filter(event_dict):
 
 if __name__ == '__main__':
     r = BlLiveRoom()
-    sync(r.connect())
+    r.connect()
