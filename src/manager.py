@@ -45,13 +45,16 @@ class Management:
         from langchain import OpenAI
         import requests
         # 测试外网环境(可能异常)
-        r = requests.get(url='https://www.youtube.com/', verify=False, proxies={
-            'http': f'http://{config.proxy}/',
-            'https': f'http://{config.proxy}/'
-        })
+        proxies = None
+        if config.proxy:
+            proxies = {
+                'http': f'http://{config.proxy}/',
+                'https': f'http://{config.proxy}/'
+            }
+        r = requests.get(url='https://www.youtube.com/', verify=False, proxies=proxies)
         assert r.status_code == 200
         # 测试openai库
-        llm = OpenAI(temperature=config.temperature, openai_api_key=get_openai_key(), verbose=config.debug)
+        llm = OpenAI(temperature=config.temperature, openai_api_base=config.base_url, openai_api_key=get_openai_key(), verbose=config.debug)
         text = "python是世界上最好的语言 "
         print(llm(text))
         print('测试成功！')

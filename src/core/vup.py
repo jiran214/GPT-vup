@@ -50,6 +50,7 @@ class VtuBer:
         messages = self.event.get_prompt_messages(**extra_kwargs)
         logger.info(f"prompt:{messages[1]} 开始请求gpt")
         chat = ChatOpenAI(temperature=config.temperature, max_retries=2, max_tokens=150,
+                          openai_api_base=config.base_url,
                           openai_api_key=get_openai_key())
         llm_res = chat.generate([messages])
         assistant_content = llm_res.generations[0][0].text
