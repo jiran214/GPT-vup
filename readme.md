@@ -1,11 +1,12 @@
 # GPT-vup Live2D数字人直播
+**（本库停止维护，可以关注下我的新项目：Langup: https://github.com/jiran214/langup-ai 已实现直播数字人）**
 
 ![](https://img.shields.io/badge/license-GPL-blue)
 
 ## 简介
 **Real Virtual UP**
 支持BiliBili和抖音直播，基于生产者-消费者模型设计，使用了openai嵌入、GPT3.5 api
-(本库暂时停止维护，后续会出精简版本~)
+(本库暂时停止维护)
 
 ### 功能
 - 基本功能，回答弹幕和SC、欢迎入场观众、感谢礼物
