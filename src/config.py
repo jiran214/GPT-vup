@@ -19,6 +19,7 @@ tss_settings = dict(_config.items('edge-tss'))
 
 api_key_list = [value for key, value in _config.items('openai') if key.startswith('api') and value]
 temperature = _config.get('openai', 'temperature')
+base_url = _config.get('openai', 'base_url')
 room_id = _config.getint('room', 'id')
 mysql = dict(_config.items('mysql'))
 sqlite = dict(_config.items('sqlite'))

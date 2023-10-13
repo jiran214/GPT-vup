@@ -154,6 +154,7 @@ def top_n_indices_from_embeddings(
 
 
 def sync_get_embedding(texts: List[str], model="text-embedding-ada-002"):
+    openai.api_base=config.base_url
     res = openai.Embedding.create(input=texts, model=model, api_key=get_openai_key())
     if isinstance(texts, list) and len(texts) == 1:
         return res['data'][0]['embedding']
